@@ -9,13 +9,13 @@ Monorepo for the Pet Health platform using Turborepo, with a React/Vite web app 
 - `packages/config-eslint` - Shared ESLint configuration
 - `packages/tailwind-config` - Shared Tailwind and global CSS (shadcn-style)
 - `packages/typescript-config` - Shared TypeScript configurations
+- `packages/ui` - Shared UI Components
 
 Use `pnpm` as the package manager.
 
 Common scripts:
 
-- `pnpm dev` - Run all apps in dev mode
-- `pnpm build` - Build all apps
-- `pnpm lint` - Lint all packages and apps
-- `pnpm test` - Run tests where available
+- `pnpm dev:ui` - Run Storybook for UI Elements
+- `pnpm dev:web` - Starts frontend application on dev mode
+- `pnpm dev:api` - Starts backend application on dev mode
 
