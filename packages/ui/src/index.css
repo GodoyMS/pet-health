@@ -1,0 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600&family=Raleway:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@repo/tailwind-config";

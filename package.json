@@ -1,0 +1,24 @@
+{
+  "name": "pet-health-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "lint": "turbo lint",
+    "test": "turbo test",
+    "prepare": "turbo prune --scope=web --scope=api --docker",
+    "dev:ui": "turbo run dev --filter=@repo/ui",
+    "dev:web": "turbo run dev --filter=web",
+    "dev:api": "turbo run dev --filter=api"
+  },
+  "devDependencies": {
+    "turbo": "^2.8.11",
+    "typescript": "^5.7.0"
+  }
+}
