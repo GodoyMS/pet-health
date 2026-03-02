@@ -11,18 +11,8 @@ export const DashboardHomePage = () => {
         </p>
       </header>
       <div className="mt-4 flex gap-4">
-        <Link
-          to="/dashboard/pets"
-          className="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
-        >
-          View pets
-        </Link>
-        <Button  variant="flat"  >
-          View pets
-        </Button>
-        <Button >
-          View pets
-        </Button>
+        
+      
       </div>
     </section>
   );

@@ -1,16 +1,27 @@
 import { httpClient } from "@shared/api/httpClient";
 
-export interface PetDTO {
+export interface SpeciesSummary {
   id: string;
   name: string;
-  species: string;
-  age?: number;
+  imageUrl: string | null;
+}
+
+export interface PetDTO {
+  id: string;
+  ownerId: string;
+  name: string;
+  species: SpeciesSummary;
+  birthDate: string;
+  breed: string;
+  expectedLifeSpanYears: number | null;
 }
 
 export interface CreatePetPayload {
   name: string;
-  species: string;
-  age?: number;
+  speciesId: string;
+  birthDate: string;
+  breed: string;
+  expectedLifeSpanYears?: number | null;
 }
 
 export const petsApi = {
@@ -24,4 +35,3 @@ export const petsApi = {
     return httpClient.post<PetDTO>("/pets", payload);
   }
 };
-

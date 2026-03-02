@@ -34,7 +34,7 @@ const DashboardLayout = () => {
     >
       <TooltipProvider>
         <AppSidebar variant="inset" />
-        <SidebarInset>
+        <SidebarInset className="p-4">
           <SidebarTrigger />
           <Outlet />
         </SidebarInset>

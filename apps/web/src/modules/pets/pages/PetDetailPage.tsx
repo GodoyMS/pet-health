@@ -32,8 +32,7 @@ export const PetDetailPage = () => {
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">{data.name}</h1>
         <p className="text-sm text-muted-foreground">
-          {data.species}
-          {data.age ? ` • ${data.age} years` : null}
+       
         </p>
       </header>
     </section>
