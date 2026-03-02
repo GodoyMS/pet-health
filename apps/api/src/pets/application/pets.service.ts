@@ -7,9 +7,10 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { PetOrmEntity } from "../infrastructure/typeorm/pet.orm-entity";
-import { Pet } from "../domain/pet.entity";
 import { UserOrmEntity } from "../../users/infrastructure/typeorm/user.orm-entity";
 import { SpeciesOrmEntity } from "../../species/infrastructure/typeorm/species.orm-entity";
+import type { PetWithSpecies } from "./pet-with-species.read-model";
+import { toPetWithSpecies } from "./pet-with-species.mapper";
 
 export interface CreatePetInput {
   name: string;
@@ -30,27 +31,16 @@ export class PetsService {
     private readonly speciesRepo: Repository<SpeciesOrmEntity>
   ) {}
 
-  private toDomain(entity: PetOrmEntity): Pet {
-    return new Pet(
-      entity.id,
-      entity.owner.id,
-      entity.name,
-      entity.species.id,
-      new Date(entity.birthDate),
-      entity.breed,
-      entity.expectedLifeSpanYears
-    );
-  }
-
-  async listForUser(userId: string): Promise<Pet[]> {
+  async listForUser(userId: string): Promise<PetWithSpecies[]> {
     const pets = await this.repo.find({
       where: { owner: { id: userId } },
-      relations: ["owner", "species"]
+      relations: ["owner", "species"],
+      order: { name: "ASC" }
     });
-    return pets.map((p) => this.toDomain(p));
+    return pets.map(toPetWithSpecies);
   }
 
-  async getForUser(userId: string, id: string): Promise<Pet> {
+  async getForUser(userId: string, id: string): Promise<PetWithSpecies> {
     const pet = await this.repo.findOne({
       where: { id, owner: { id: userId } },
       relations: ["owner", "species"]
@@ -58,10 +48,13 @@ export class PetsService {
     if (!pet) {
       throw new NotFoundException("Pet not found");
     }
-    return this.toDomain(pet);
+    return toPetWithSpecies(pet);
   }
 
-  async createForUser(userId: string, input: CreatePetInput): Promise<Pet> {
+  async createForUser(
+    userId: string,
+    input: CreatePetInput
+  ): Promise<PetWithSpecies> {
     const owner = await this.usersRepo.findOne({ where: { id: userId } });
     if (!owner) {
       throw new NotFoundException("Owner not found");
@@ -83,6 +76,14 @@ export class PetsService {
       expectedLifeSpanYears: input.expectedLifeSpanYears ?? null
     });
     const saved = await this.repo.save(entity);
-    return this.toDomain(saved);
+
+    const withRelations = await this.repo.findOne({
+      where: { id: saved.id },
+      relations: ["owner", "species"]
+    });
+    if (!withRelations) {
+      throw new NotFoundException("Pet not found after create");
+    }
+    return toPetWithSpecies(withRelations);
   }
 }

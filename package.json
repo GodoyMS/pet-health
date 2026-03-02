@@ -15,7 +15,13 @@
     "prepare": "turbo prune --scope=web --scope=api --docker",
     "dev:ui": "turbo run dev --filter=@repo/ui",
     "dev:web": "turbo run dev --filter=web",
-    "dev:api": "turbo run dev --filter=api"
+    "dev:api": "turbo run dev --filter=api",
+    "test:web": "turbo run test --filter=web",
+    "test:api": "turbo run test --filter=api",
+    "test:coverage:web": "turbo run test:coverage --filter=web",
+    "test:coverage:api": "turbo run test:coverage --filter=api",
+    "test:all": "turbo run test:run",
+    "test:coverage:all": "turbo run test:coverage"
   },
   "devDependencies": {
     "turbo": "^2.8.11",

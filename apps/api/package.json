@@ -7,7 +7,9 @@
     "dev": "nest start --watch",
     "build": "nest build",
     "lint": "eslint \"src/**/*.ts\"",
-    "test": "echo \"No tests yet\""
+    "test": "jest --coverage --passWithNoTests",
+    "test:run": "jest --coverage --passWithNoTests",
+    "test:coverage": "jest --coverage --passWithNoTests"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.14",
@@ -36,9 +38,14 @@
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.6",
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.10.2",
+    "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
+    "jest": "^29.7.0",
+    "supertest": "^7.0.0",
+    "ts-jest": "^29.2.5",
     "eslint": "^9.17.0",
     "eslint-plugin-import": "^2.31.0"
   }

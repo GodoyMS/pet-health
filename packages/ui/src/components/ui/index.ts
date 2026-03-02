@@ -141,7 +141,16 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
-  
- 
 } from "./Sheet/Sheet";
 export * as MaterialSymbols from "material-symbols";
+export {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "./Dialog/Dialog";
+export { Skeleton } from "./Skeleton/Skeleton";
