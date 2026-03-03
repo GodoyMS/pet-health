@@ -1,0 +1,16 @@
+{
+  "name": "@repo/typescript-config",
+  "version": "1.0.0",
+  "private": true,
+  "main": "base.json",
+  "exports": {
+    "./base.json": "./base.json",
+    "./react-app.json": "./react-app.json",
+    "./node-lib.json": "./node-lib.json",
+    "./nest-app.json": "./nest-app.json",
+    "./react-library.json": "./react-library.json"
+  },
+  "peerDependencies": {
+    "typescript": "^5.7.0"
+  }
+}
