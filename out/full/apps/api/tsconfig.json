@@ -1,9 +1,0 @@
-{
-  "extends": "@repo/typescript-config/nest-app.json",
-  "compilerOptions": {
-    "baseUrl": "./src",
-    "types": ["node", "reflect-metadata", "jest"]
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
-}
