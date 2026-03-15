@@ -1,5 +1,5 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
-import { PreventiveRuleOrmEntity } from "./preventive-rule.orm-entity";
+
 import { PetOrmEntity } from "../../../pets/infrastructure/typeorm/pet.orm-entity";
 
 @Entity("species")
@@ -13,15 +13,6 @@ export class SpeciesOrmEntity {
   @Column({ type: "varchar", nullable: true })
   imageUrl!: string | null;
 
-  @OneToMany(
-    () => PetOrmEntity, 
-    (pet) => pet.species
-  )
+  @OneToMany(() => PetOrmEntity, (pet) => pet.species)
   pets!: PetOrmEntity[];
-
-  @OneToMany(
-    () => PreventiveRuleOrmEntity,
-    (rule) => rule.species
-  )
-  preventiveRules!: PreventiveRuleOrmEntity[];
 }

@@ -5,15 +5,11 @@ import { SpeciesService } from "./application/species.service";
 import { SpeciesSeedService } from "./application/species-seed.service";
 import { SpeciesController } from "./interfaces/http/species.controller";
 import { SpeciesOrmEntity } from "./infrastructure/typeorm/species.orm-entity";
-import { PreventiveRuleOrmEntity } from "./infrastructure/typeorm/preventive-rule.orm-entity";
-import { PreventiveRuleService } from "./application/preventive-rule.service";
 
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([SpeciesOrmEntity, PreventiveRuleOrmEntity]),
-  ],
+  imports: [TypeOrmModule.forFeature([SpeciesOrmEntity])],
   controllers: [SpeciesController],
-  providers: [SpeciesService, SpeciesSeedService, PreventiveRuleService],
-  exports: [SpeciesService],
+  providers: [SpeciesService, SpeciesSeedService],
+  exports: [SpeciesService]
 })
 export class SpeciesModule {}
