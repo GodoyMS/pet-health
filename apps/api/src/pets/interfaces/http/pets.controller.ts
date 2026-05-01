@@ -40,6 +40,13 @@ class SpeciesSummaryDto {
   imageUrl!: string | null;
 }
 
+class BreedSummaryDto {
+  @ApiProperty()
+  id!: string;
+  @ApiProperty()
+  name!: string;
+}
+
 class PetWithSpeciesDto {
   @ApiProperty()
   id!: string;
@@ -49,10 +56,10 @@ class PetWithSpeciesDto {
   name!: string;
   @ApiProperty({ type: SpeciesSummaryDto })
   species!: SpeciesSummaryDto;
+  @ApiProperty({ type: BreedSummaryDto })
+  breed!: BreedSummaryDto;
   @ApiProperty({ example: "2020-05-15" })
   birthDate!: string;
-  @ApiProperty()
-  breed!: string;
   @ApiProperty({ nullable: true })
   expectedLifeSpanYears!: number | null;
 }
@@ -67,14 +74,13 @@ class CreatePetDto {
   @IsUUID("4")
   speciesId!: string;
 
+  @ApiProperty({ example: "550e8400-e29b-41d4-a716-446655440001", description: "UUID of the breed (must belong to speciesId)" })
+  @IsUUID("4")
+  breedId!: string;
+
   @ApiProperty({ example: "2020-05-15", description: "ISO 8601 date (YYYY-MM-DD)" })
   @IsISO8601({ strict: true }, { message: "birthDate must be a valid ISO 8601 date (YYYY-MM-DD)" })
   birthDate!: string;
-
-  @ApiProperty({ example: "Golden Retriever" })
-  @IsString()
-  @MinLength(1)
-  breed!: string;
 
   @ApiPropertyOptional({ example: 12, minimum: 1 })
   @IsOptional()
@@ -122,8 +128,8 @@ export class PetsController {
     return this.petsService.createForUser(user.id, {
       name: body.name,
       speciesId: body.speciesId,
+      breedId: body.breedId,
       birthDate: body.birthDate,
-      breed: body.breed,
       expectedLifeSpanYears: body.expectedLifeSpanYears ?? null
     });
   }

@@ -37,8 +37,10 @@ describe("SpeciesController (integration)", () => {
   describe("GET /species", () => {
     it("returns 200 and list from service", async () => {
       const list = [
-        new Species("id-1", "Dog", null),
-        new Species("id-2", "Cat", null)
+        new Species("id-1", "Dog", null, [
+          { id: "b1", name: "Labrador Retriever" }
+        ]),
+        new Species("id-2", "Cat", null, [])
       ];
       speciesService.findAll.mockResolvedValue(list);
 
@@ -46,13 +48,20 @@ describe("SpeciesController (integration)", () => {
 
       expect(Array.isArray(res.body)).toBe(true);
       expect(res.body).toHaveLength(2);
-      expect(res.body[0]).toMatchObject({ id: "id-1", name: "Dog", imageUrl: null });
+      expect(res.body[0]).toMatchObject({
+        id: "id-1",
+        name: "Dog",
+        imageUrl: null,
+        breeds: [{ id: "b1", name: "Labrador Retriever" }]
+      });
     });
   });
 
   describe("GET /species/:id", () => {
     it("returns 200 and species when found", async () => {
-      const species = new Species("id-1", "Dog", "https://example.com/dog.png");
+      const species = new Species("id-1", "Dog", "https://example.com/dog.png", [
+        { id: "b1", name: "Labrador Retriever" }
+      ]);
       speciesService.findById.mockResolvedValue(species);
 
       const res = await request(app.getHttpServer()).get("/species/id-1").expect(200);
@@ -60,7 +69,8 @@ describe("SpeciesController (integration)", () => {
       expect(res.body).toMatchObject({
         id: "id-1",
         name: "Dog",
-        imageUrl: "https://example.com/dog.png"
+        imageUrl: "https://example.com/dog.png",
+        breeds: [{ id: "b1", name: "Labrador Retriever" }]
       });
     });
 

@@ -5,12 +5,18 @@ import { PetsService } from "./application/pets.service";
 import { PetsController } from "./interfaces/http/pets.controller";
 import { PetOrmEntity } from "./infrastructure/typeorm/pet.orm-entity";
 import { UserOrmEntity } from "../users/infrastructure/typeorm/user.orm-entity";
+import { BreedOrmEntity } from "../species/infrastructure/typeorm/breed.orm-entity";
 import { SpeciesOrmEntity } from "../species/infrastructure/typeorm/species.orm-entity";
 import { AuthModule } from "../auth/auth.module";
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([PetOrmEntity, UserOrmEntity, SpeciesOrmEntity]),
+    TypeOrmModule.forFeature([
+      PetOrmEntity,
+      UserOrmEntity,
+      SpeciesOrmEntity,
+      BreedOrmEntity
+    ]),
     AuthModule
   ],
   controllers: [PetsController],

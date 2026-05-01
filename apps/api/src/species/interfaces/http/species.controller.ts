@@ -10,6 +10,13 @@ import {
 import { SpeciesService } from "../../application/species.service";
 import { Species } from "../../domain/species.entity";
 
+class BreedResponseDto {
+  @ApiProperty()
+  id!: string;
+  @ApiProperty()
+  name!: string;
+}
+
 class SpeciesResponseDto {
   @ApiProperty()
   id!: string;
@@ -17,6 +24,8 @@ class SpeciesResponseDto {
   name!: string;
   @ApiProperty({ nullable: true })
   imageUrl!: string | null;
+  @ApiProperty({ type: [BreedResponseDto], description: "Breeds for this species" })
+  breeds!: BreedResponseDto[];
 }
 
 @ApiTags("species")
@@ -29,6 +38,15 @@ export class SpeciesController {
   @ApiResponse({ status: 200, description: "List of species", type: [SpeciesResponseDto] })
   async list(): Promise<Species[]> {
     return this.speciesService.findAll();
+  }
+
+  @Get(":id/breeds")
+  @ApiOperation({ summary: "List breeds for a species" })
+  @ApiParam({ name: "id", description: "Species UUID" })
+  @ApiResponse({ status: 200, description: "Breeds for this species", type: [BreedResponseDto] })
+  @ApiResponse({ status: 404, description: "Species not found" })
+  async listBreeds(@Param("id") id: string) {
+    return this.speciesService.findBreedsBySpeciesId(id);
   }
 
   @Get(":id")

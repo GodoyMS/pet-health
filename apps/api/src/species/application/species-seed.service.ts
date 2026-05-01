@@ -2,22 +2,57 @@ import { Injectable, OnModuleInit } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
+import { BreedOrmEntity } from "../infrastructure/typeorm/breed.orm-entity";
 import { SpeciesOrmEntity } from "../infrastructure/typeorm/species.orm-entity";
-import { DEFAULT_SPECIES } from "../infrastructure/species.seed";
+import { SPECIES_SEED_DATA } from "species/infrastructure/species.seed";
 
 @Injectable()
 export class SpeciesSeedService implements OnModuleInit {
   constructor(
     @InjectRepository(SpeciesOrmEntity)
-    private readonly repo: Repository<SpeciesOrmEntity>
+    private readonly speciesRepo: Repository<SpeciesOrmEntity>,
+    @InjectRepository(BreedOrmEntity)
+    private readonly breedRepo: Repository<BreedOrmEntity>
   ) {}
 
   async onModuleInit(): Promise<void> {
-    const count = await this.repo.count();
-    if (count > 0) return;
+    for (const s of SPECIES_SEED_DATA) {
+      const payload = {
+        name: s.name,
+        slug: s.slug,
+        description: s.description,
+        imageUrl: s.imageUrl,
+        order: s.order
+      };
+      const existing = await this.speciesRepo.findOne({ where: { name: s.name } });
+      if (existing) {
+        await this.speciesRepo.update(existing.id, payload);
+      } else {
+        await this.speciesRepo.insert(payload);
+      }
 
-    await this.repo.insert(
-      DEFAULT_SPECIES.map((s) => ({ name: s.name, imageUrl: s.imageUrl }))
-    );
+      const speciesRow = await this.speciesRepo.findOne({
+        where: { name: s.name }
+      });
+      if (!speciesRow) {
+        continue;
+      }
+
+      for (const b of s.breeds) {
+        const existingBreed = await this.breedRepo.findOne({
+          where: { species: { id: speciesRow.id }, name: b.name }
+        });
+        if (existingBreed) {
+          await this.breedRepo.update(existingBreed.id, { name: b.name });
+        } else {
+          await this.breedRepo.save(
+            this.breedRepo.create({
+              name: b.name,
+              species: speciesRow
+            })
+          );
+        }
+      }
+    }
   }
 }

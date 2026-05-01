@@ -1,6 +1,7 @@
 import { toPetWithSpecies } from "./pet-with-species.mapper";
 import { PetOrmEntity } from "../infrastructure/typeorm/pet.orm-entity";
 import { UserOrmEntity } from "../../users/infrastructure/typeorm/user.orm-entity";
+import { BreedOrmEntity } from "../../species/infrastructure/typeorm/breed.orm-entity";
 import { SpeciesOrmEntity } from "../../species/infrastructure/typeorm/species.orm-entity";
 
 describe("toPetWithSpecies", () => {
@@ -11,13 +12,17 @@ describe("toPetWithSpecies", () => {
       name: "Dog",
       imageUrl: "https://example.com/dog.png"
     } as SpeciesOrmEntity;
+    const breed = {
+      id: "breed-1",
+      name: "Labrador Retriever"
+    } as BreedOrmEntity;
     const entity = {
       id: "pet-1",
       owner,
       name: "Rex",
       species,
+      breed,
       birthDate: "2020-01-15",
-      breed: "Labrador",
       expectedLifeSpanYears: 12
     } as PetOrmEntity;
 
@@ -32,8 +37,11 @@ describe("toPetWithSpecies", () => {
         name: "Dog",
         imageUrl: "https://example.com/dog.png"
       },
+      breed: {
+        id: "breed-1",
+        name: "Labrador Retriever"
+      },
       birthDate: "2020-01-15",
-      breed: "Labrador",
       expectedLifeSpanYears: 12
     });
   });
@@ -45,13 +53,14 @@ describe("toPetWithSpecies", () => {
       name: "Cat",
       imageUrl: null
     } as SpeciesOrmEntity;
+    const breed = { id: "breed-2", name: "Siamese" } as BreedOrmEntity;
     const entity = {
       id: "pet-2",
       owner,
       name: "Whiskers",
       species,
+      breed,
       birthDate: "2021-06-01",
-      breed: "Mixed",
       expectedLifeSpanYears: null
     } as PetOrmEntity;
 

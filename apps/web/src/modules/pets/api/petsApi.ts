@@ -6,21 +6,26 @@ export interface SpeciesSummary {
   imageUrl: string | null;
 }
 
+export interface BreedSummary {
+  id: string;
+  name: string;
+}
+
 export interface PetDTO {
   id: string;
   ownerId: string;
   name: string;
   species: SpeciesSummary;
+  breed: BreedSummary | null;
   birthDate: string;
-  breed: string;
   expectedLifeSpanYears: number | null;
 }
 
 export interface CreatePetPayload {
   name: string;
   speciesId: string;
+  breedId: string;
   birthDate: string;
-  breed: string;
   expectedLifeSpanYears?: number | null;
 }
 

@@ -18,11 +18,10 @@ const PetListCard = ({ pet }: { pet: PetDTO }) => {
             <h3 className="font-display font-semibold text-lg text-card-foreground">
               {pet.name}
             </h3>
-            <p className="text-sm text-muted-foreground">{pet.breed}</p>
+            <p className="text-sm text-muted-foreground">{pet.breed?.name ?? "Unknown"}</p>
             <div className="grid grid-cols-2 gap-2 mt-3 text-xs text-muted-foreground">
               <span>Age: {pet.birthDate}</span>
               <span>Weight: 10 kg</span>
-              <span>Stage:</span>
               
               {pet.expectedLifeSpanYears && <span>Lifespan: {pet.expectedLifeSpanYears} years</span>}
             </div>

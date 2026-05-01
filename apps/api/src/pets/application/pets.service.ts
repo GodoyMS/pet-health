@@ -8,6 +8,7 @@ import { Repository } from "typeorm";
 
 import { PetOrmEntity } from "../infrastructure/typeorm/pet.orm-entity";
 import { UserOrmEntity } from "../../users/infrastructure/typeorm/user.orm-entity";
+import { BreedOrmEntity } from "../../species/infrastructure/typeorm/breed.orm-entity";
 import { SpeciesOrmEntity } from "../../species/infrastructure/typeorm/species.orm-entity";
 import type { PetWithSpecies } from "./pet-with-species.read-model";
 import { toPetWithSpecies } from "./pet-with-species.mapper";
@@ -15,8 +16,8 @@ import { toPetWithSpecies } from "./pet-with-species.mapper";
 export interface CreatePetInput {
   name: string;
   speciesId: string;
+  breedId: string;
   birthDate: string;
-  breed: string;
   expectedLifeSpanYears?: number | null;
 }
 
@@ -28,22 +29,25 @@ export class PetsService {
     @InjectRepository(UserOrmEntity)
     private readonly usersRepo: Repository<UserOrmEntity>,
     @InjectRepository(SpeciesOrmEntity)
-    private readonly speciesRepo: Repository<SpeciesOrmEntity>
+    private readonly speciesRepo: Repository<SpeciesOrmEntity>,
+    @InjectRepository(BreedOrmEntity)
+    private readonly breedRepo: Repository<BreedOrmEntity>
   ) {}
 
   async listForUser(userId: string): Promise<PetWithSpecies[]> {
     const pets = await this.repo.find({
       where: { owner: { id: userId } },
-      relations: ["owner", "species"],
+      relations: ["owner", "species", "breed"],
       order: { name: "ASC" }
     });
+    console.log(pets);
     return pets.map(toPetWithSpecies);
   }
 
   async getForUser(userId: string, id: string): Promise<PetWithSpecies> {
     const pet = await this.repo.findOne({
       where: { id, owner: { id: userId } },
-      relations: ["owner", "species"]
+      relations: ["owner", "species", "breed"]
     });
     if (!pet) {
       throw new NotFoundException("Pet not found");
@@ -67,19 +71,30 @@ export class PetsService {
       throw new BadRequestException("Species not found");
     }
 
+    const breed = await this.breedRepo.findOne({
+      where: { id: input.breedId },
+      relations: ["species"]
+    });
+    if (!breed) {
+      throw new BadRequestException("Breed not found");
+    }
+    if (breed.species.id !== input.speciesId) {
+      throw new BadRequestException("Breed does not belong to the selected species");
+    }
+
     const entity = this.repo.create({
       name: input.name,
       owner,
       species,
+      breed,
       birthDate: input.birthDate,
-      breed: input.breed,
       expectedLifeSpanYears: input.expectedLifeSpanYears ?? null
     });
     const saved = await this.repo.save(entity);
 
     const withRelations = await this.repo.findOne({
       where: { id: saved.id },
-      relations: ["owner", "species"]
+      relations: ["owner", "species", "breed"]
     });
     if (!withRelations) {
       throw new NotFoundException("Pet not found after create");
