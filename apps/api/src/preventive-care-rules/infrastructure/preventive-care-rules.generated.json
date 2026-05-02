@@ -1,5 +1,421 @@
 {
-  "generatedAt": "1970-01-01T00:00:00.000Z",
-  "model": "placeholder-not-generated-yet",
-  "rulesBySpeciesSlug": {}
+  "generatedAt": "2026-05-02T02:16:52.851Z",
+  "model": "deepseek-v4-flash",
+  "rulesBySpeciesSlug": {
+    "dog": [
+      {
+        "title": "Puppy first vaccination (DHPP)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 42,
+        "applicableMaxAgeDays": 56,
+        "intervalDays": null
+      },
+      {
+        "title": "Puppy second vaccination (DHPP)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 70,
+        "applicableMaxAgeDays": 84,
+        "intervalDays": null
+      },
+      {
+        "title": "Puppy third vaccination (DHPP + Rabies)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 98,
+        "applicableMaxAgeDays": 112,
+        "intervalDays": null
+      },
+      {
+        "title": "DHPP booster",
+        "type": "vaccination",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Rabies booster",
+        "type": "vaccination",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Bordetella vaccination (kennel cough)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 56,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Leptospirosis vaccination",
+        "type": "vaccination",
+        "applicableMinAgeDays": 84,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Puppy deworming (roundworms/hookworms)",
+        "type": "deworming",
+        "applicableMinAgeDays": 14,
+        "applicableMaxAgeDays": 21,
+        "intervalDays": null
+      },
+      {
+        "title": "Puppy deworming (second dose)",
+        "type": "deworming",
+        "applicableMinAgeDays": 28,
+        "applicableMaxAgeDays": 35,
+        "intervalDays": null
+      },
+      {
+        "title": "Puppy deworming (third dose)",
+        "type": "deworming",
+        "applicableMinAgeDays": 42,
+        "applicableMaxAgeDays": 49,
+        "intervalDays": null
+      },
+      {
+        "title": "Monthly heartworm prevention",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 56,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 30
+      },
+      {
+        "title": "Monthly flea and tick prevention",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 56,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 30
+      },
+      {
+        "title": "Annual wellness exam and weight check",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Dental health check and cleaning",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Senior wellness exam (age 7+)",
+        "type": "checkup",
+        "applicableMinAgeDays": 2555,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 182
+      }
+    ],
+    "cat": [
+      {
+        "title": "Kitten first vaccination (FVRCP)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 56,
+        "applicableMaxAgeDays": 70,
+        "intervalDays": null
+      },
+      {
+        "title": "Kitten second vaccination (FVRCP)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 84,
+        "applicableMaxAgeDays": 98,
+        "intervalDays": null
+      },
+      {
+        "title": "Kitten third vaccination (FVRCP + Rabies)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 112,
+        "applicableMaxAgeDays": 126,
+        "intervalDays": null
+      },
+      {
+        "title": "FVRCP booster",
+        "type": "vaccination",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Rabies booster",
+        "type": "vaccination",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "FeLV vaccination (if outdoor/at risk)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 56,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Kitten deworming (roundworms)",
+        "type": "deworming",
+        "applicableMinAgeDays": 21,
+        "applicableMaxAgeDays": 28,
+        "intervalDays": null
+      },
+      {
+        "title": "Kitten deworming (second dose)",
+        "type": "deworming",
+        "applicableMinAgeDays": 42,
+        "applicableMaxAgeDays": 49,
+        "intervalDays": null
+      },
+      {
+        "title": "Monthly heartworm prevention",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 56,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 30
+      },
+      {
+        "title": "Monthly flea prevention",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 56,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 30
+      },
+      {
+        "title": "Annual wellness exam and weight check",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Dental health check",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Senior wellness exam (age 7+)",
+        "type": "checkup",
+        "applicableMinAgeDays": 2555,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 182
+      }
+    ],
+    "bird": [
+      {
+        "title": "Initial wellness exam and fecal test",
+        "type": "checkup",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Annual wellness exam and blood work",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Beak and nail trim check",
+        "type": "checkup",
+        "applicableMinAgeDays": 180,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 180
+      },
+      {
+        "title": "Polyomavirus vaccination (if recommended)",
+        "type": "vaccination",
+        "applicableMinAgeDays": 60,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Deworming (if indicated by fecal)",
+        "type": "deworming",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 180
+      },
+      {
+        "title": "External parasite check (mites/lice)",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 90
+      }
+    ],
+    "rabbit": [
+      {
+        "title": "First RHDV2 vaccination",
+        "type": "vaccination",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": 60,
+        "intervalDays": null
+      },
+      {
+        "title": "RHDV2 booster",
+        "type": "vaccination",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Annual wellness exam and dental check",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Spay/neuter consultation",
+        "type": "checkup",
+        "applicableMinAgeDays": 120,
+        "applicableMaxAgeDays": 240,
+        "intervalDays": null
+      },
+      {
+        "title": "Fecal exam for parasites",
+        "type": "deworming",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Monthly flea prevention (if outdoors)",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 60,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 30
+      }
+    ],
+    "fish": [
+      {
+        "title": "New fish quarantine check",
+        "type": "checkup",
+        "applicableMinAgeDays": 1,
+        "applicableMaxAgeDays": 30,
+        "intervalDays": null
+      },
+      {
+        "title": "Water quality testing and health check",
+        "type": "checkup",
+        "applicableMinAgeDays": 1,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 30
+      },
+      {
+        "title": "Deworming (if new fish or symptoms)",
+        "type": "deworming",
+        "applicableMinAgeDays": 1,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 90
+      },
+      {
+        "title": "External parasite treatment (if needed)",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 1,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 90
+      }
+    ],
+    "hamster": [
+      {
+        "title": "Initial wellness exam",
+        "type": "checkup",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Annual wellness exam and nail trim",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Fecal exam for parasites",
+        "type": "deworming",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Mite prevention check",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 90
+      }
+    ],
+    "turtle": [
+      {
+        "title": "Initial wellness exam and fecal test",
+        "type": "checkup",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Annual wellness exam and blood work",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Deworming (if indicated by fecal)",
+        "type": "deworming",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 180
+      },
+      {
+        "title": "External parasite check (ticks/mites)",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 90
+      }
+    ],
+    "guinea-pig": [
+      {
+        "title": "Initial wellness exam and weight check",
+        "type": "checkup",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Annual wellness exam and dental check",
+        "type": "checkup",
+        "applicableMinAgeDays": 365,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Fecal exam for parasites",
+        "type": "deworming",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      },
+      {
+        "title": "Monthly flea prevention (if outdoors)",
+        "type": "parasite_control",
+        "applicableMinAgeDays": 60,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 30
+      },
+      {
+        "title": "Vitamin C supplementation check",
+        "type": "checkup",
+        "applicableMinAgeDays": 30,
+        "applicableMaxAgeDays": null,
+        "intervalDays": 365
+      }
+    ]
+  }
 }

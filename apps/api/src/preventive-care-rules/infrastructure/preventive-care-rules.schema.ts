@@ -54,3 +54,58 @@ export const deepseekRulesResponseSchema = z.object({
     z.array(preventiveCareRuleSeedDefinitionSchema)
   )
 });
+
+/** Minimum rows per species for AI-generated files (pet-owner dashboard quality). */
+export const GENERATOR_MIN_RULES_PER_SPECIES = 3;
+
+/** Require breadth across rule categories. */
+export const GENERATOR_MIN_DISTINCT_TYPES_PER_SPECIES = 2;
+
+/** Titles should read like clear product copy for owners, not single-word labels. */
+export const GENERATOR_MIN_TITLE_WORDS = 1;
+
+export type RuleRowForCoverage = {
+  title: string;
+  type: string;
+};
+
+/**
+ * Extra validation after Zod: coverage depth and owner-friendly titles.
+ * Returns an error message for the LLM retry prompt, or `undefined` if OK.
+ */
+export function validateGeneratorProfessionalCoverage(
+  expectedSlugs: readonly string[],
+  rulesBySpeciesSlug: Record<string, RuleRowForCoverage[]>
+): string | undefined {
+  const parts: string[] = [];
+
+  for (const slug of expectedSlugs) {
+    const rules = rulesBySpeciesSlug[slug] ?? [];
+    if (rules.length < GENERATOR_MIN_RULES_PER_SPECIES) {
+      parts.push(
+        `"${slug}": need at least ${GENERATOR_MIN_RULES_PER_SPECIES} rules (found ${rules.length}).`
+      );
+    }
+
+    const types = new Set(rules.map((r) => r.type));
+    if (types.size < GENERATOR_MIN_DISTINCT_TYPES_PER_SPECIES) {
+      parts.push(
+        `"${slug}": need at least ${GENERATOR_MIN_DISTINCT_TYPES_PER_SPECIES} different rule types (found: ${[...types].join(", ") || "none"}).`
+      );
+    }
+
+    for (const r of rules) {
+      const words = r.title
+        .trim()
+        .split(/\s+/)
+        .filter((w) => w.length > 0);
+      if (words.length < GENERATOR_MIN_TITLE_WORDS) {
+        parts.push(
+          `"${slug}": title must be at least ${GENERATOR_MIN_TITLE_WORDS} words for clarity (e.g. vaccine/wellness copy): "${r.title}"`
+        );
+      }
+    }
+  }
+
+  return parts.length > 0 ? parts.join("\n") : undefined;
+}

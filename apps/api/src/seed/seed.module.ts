@@ -2,7 +2,6 @@ import { Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import { ormConfig } from "../config/ormconfig";
-import { PreventiveCareRulesModule } from "../preventive-care-rules/preventive-care-rules.module";
 import { PreventiveCareRuleOrmEntity } from "../preventive-care-rules/infrastructure/typeorm/preventive-care-rule.orm-entity";
 import { PreventiveCareRulesSeedService } from "../preventive-care-rules/application/preventive-care-rules-seed.service";
 import { SpeciesSeedService } from "../species/application/species-seed.service";
@@ -19,8 +18,7 @@ import { SpeciesOrmEntity } from "../species/infrastructure/typeorm/species.orm-
       SpeciesOrmEntity,
       BreedOrmEntity,
       PreventiveCareRuleOrmEntity
-    ]),
-    PreventiveCareRulesModule
+    ])
   ],
   providers: [SpeciesSeedService, PreventiveCareRulesSeedService]
 })

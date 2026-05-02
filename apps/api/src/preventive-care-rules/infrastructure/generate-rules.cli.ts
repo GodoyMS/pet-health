@@ -12,7 +12,8 @@ import { SPECIES_SEED_DATA } from "species/infrastructure/species.seed";
 import { deepseekChatCompletion } from "./deepseek.client";
 import {
   deepseekRulesResponseSchema,
-  generatedPreventiveCareRulesFileSchema
+  generatedPreventiveCareRulesFileSchema,
+  validateGeneratorProfessionalCoverage
 } from "./preventive-care-rules.schema";
 
 async function main(): Promise<void> {
@@ -35,24 +36,32 @@ async function main(): Promise<void> {
     (s) => `- slug "${s.slug}" (${s.name})`
   ).join("\n");
 
-  const systemPrompt = `You are compiling concise preventive-care scheduling hints for a pet health application (educational reference only — not medical advice).
-Output MUST be a single JSON object only (no markdown, no commentary).
-Use ages and intervals in whole days from birth.
-Each rule must use one of these types exactly: "vaccination", "deworming", "checkup", "parasite_control".
-Titles must be short (<= 200 characters). Prefer realistic recurring schedules when interval_days applies; omit interval_days or use null for one-off windows.
-Include realistic breadth per species (multiple rules where appropriate).`;
+  const systemPrompt = `You are a senior veterinary information editor helping build in-app preventive-care reminders for pet owners.
+Audience: front-end pet parents (clear, calm, professional tone — like trusted clinic handouts). Not clinical jargon overload.
+Content is educational scheduling guidance only (not a diagnosis; owners must consult their veterinarian).
+
+Output MUST be a single JSON object only (no markdown, no code fences, no commentary).
+Use whole days from birth for ages and intervals.
+Each rule uses exactly one type: "vaccination", "deworming", "checkup", or "parasite_control".
+Titles: <= 200 characters, Title Case or sentence case, specific and actionable (e.g. "Annual wellness exam and weight check" not "Exam").
+Cover each species thoroughly: typical vaccine series windows, booster cadence where applicable, parasite prevention rotation, routine exams, dental/or wellness checks when species-appropriate.
+Use realistic recurring schedules: set intervalDays for repeating items; omit or null intervalDays for one-off windows.
+Ground suggestions in common veterinary schedules for that species where widely accepted; when uncertain, prefer conservative mainstream intervals.`;
 
   const userPrompt = `Return JSON with exactly this shape:
 {"rulesBySpeciesSlug":{"<slug>":[{"title":"string","type":"vaccination|deworming|checkup|parasite_control","applicableMinAgeDays":number|null optional,"applicableMaxAgeDays":number|null optional,"intervalDays":number|null optional}]}}
 
-Include a key for EVERY slug listed below (even if the array is empty). Allowed slug values only: ${speciesSlugs}.
+For EVERY slug below you MUST return a non-empty array with many rules: aim for broad coverage (puppy/kitten series, adult boosters, parasite rotation, annual exams, species-specific risks).
+Arrays must not be empty. Spread types across vaccination, deworming, checkup, and parasite_control where relevant.
+
+Allowed slug keys only: ${speciesSlugs}.
 
 Species:
 ${speciesBlock}`;
 
   let lastValidationError: string | undefined;
 
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     const messages = [
       { role: "system" as const, content: systemPrompt },
       {
@@ -94,6 +103,15 @@ ${speciesBlock}`;
     > = {};
     for (const s of SPECIES_SEED_DATA) {
       merged[s.slug] = inner.rulesBySpeciesSlug[s.slug] ?? [];
+    }
+
+    const coverageError = validateGeneratorProfessionalCoverage(
+      SPECIES_SEED_DATA.map((s) => s.slug),
+      merged
+    );
+    if (coverageError) {
+      lastValidationError = `Professional coverage check failed:\n${coverageError}`;
+      continue;
     }
 
     const envelope = generatedPreventiveCareRulesFileSchema.parse({
