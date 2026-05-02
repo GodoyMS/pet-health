@@ -16,7 +16,7 @@ export class PreventiveCareRuleOrmEntity {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column()
+  @Column({ type: "varchar", length: 200 })
   title!: string;
 
   @ManyToOne(() => SpeciesOrmEntity, (species) => species.preventiveCareRules, {

@@ -9,7 +9,7 @@ export class SpeciesOrmEntity {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column()
+  @Column({ type: "varchar" })
   name!: string;
 
   @Column({ type: "varchar", unique: true, nullable: true })

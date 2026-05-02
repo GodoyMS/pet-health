@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
@@ -7,7 +7,7 @@ import { SpeciesOrmEntity } from "../infrastructure/typeorm/species.orm-entity";
 import { SPECIES_SEED_DATA } from "species/infrastructure/species.seed";
 
 @Injectable()
-export class SpeciesSeedService implements OnModuleInit {
+export class SpeciesSeedService {
   constructor(
     @InjectRepository(SpeciesOrmEntity)
     private readonly speciesRepo: Repository<SpeciesOrmEntity>,
@@ -15,7 +15,11 @@ export class SpeciesSeedService implements OnModuleInit {
     private readonly breedRepo: Repository<BreedOrmEntity>
   ) {}
 
-  async onModuleInit(): Promise<void> {
+  /** Upserts species + breeds from {@link SPECIES_SEED_DATA}. Idempotent. */
+  async seed(): Promise<void> {
+    console.error(
+      `[species-seed] upserting ${SPECIES_SEED_DATA.length} species and their breeds…`
+    );
     for (const s of SPECIES_SEED_DATA) {
       const payload = {
         name: s.name,
@@ -54,5 +58,6 @@ export class SpeciesSeedService implements OnModuleInit {
         }
       }
     }
+    console.error("[species-seed] species and breeds upsert completed.");
   }
 }

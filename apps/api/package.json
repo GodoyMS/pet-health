@@ -6,6 +6,9 @@
     "start": "node dist/main.js",
     "dev": "nest start --watch",
     "build": "nest build",
+    "seed": "tsx src/seed.cli.ts",
+    "seed:species": "tsx src/seed.cli.ts species",
+    "seed:preventive-care-rules": "tsx src/seed.cli.ts preventive-care-rules",
     "lint": "eslint \"src/**/*.ts\"",
     "test": "jest --coverage --passWithNoTests",
     "test:run": "jest --coverage --passWithNoTests",
@@ -15,6 +18,7 @@
     "@nestjs/common": "^11.1.14",
     "@nestjs/core": "^11.1.14",
     "@nestjs/platform-express": "^11.1.14",
+    "@nestjs/swagger": "^11.0.0",
     "@nestjs/typeorm": "^11.0.0",
     "bcryptjs": "^2.4.3",
     "class-transformer": "^0.5.1",
@@ -26,8 +30,7 @@
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.28",
-    "@nestjs/swagger": "^11.0.0"
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -38,16 +41,17 @@
     "@types/bcryptjs": "^2.4.2",
     "@types/cookie-parser": "^1.4.7",
     "@types/express": "^5.0.0",
-    "@types/jsonwebtoken": "^9.0.6",
     "@types/jest": "^29.5.14",
+    "@types/jsonwebtoken": "^9.0.6",
     "@types/node": "^22.10.2",
     "@types/supertest": "^6.0.2",
     "@typescript-eslint/eslint-plugin": "^8.16.0",
     "@typescript-eslint/parser": "^8.16.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-import": "^2.31.0",
     "jest": "^29.7.0",
     "supertest": "^7.0.0",
     "ts-jest": "^29.2.5",
-    "eslint": "^9.17.0",
-    "eslint-plugin-import": "^2.31.0"
+    "tsx": "^4.21.0"
   }
 }

@@ -14,7 +14,7 @@ export class PetOrmEntity {
   @PrimaryGeneratedColumn("uuid")
   id!: string;
 
-  @Column()
+  @Column({ type: "varchar" })
   name!: string;
 
   @ManyToOne(() => UserOrmEntity, (user) => user.pets, { onDelete: "CASCADE" })
