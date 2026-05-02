@@ -26,6 +26,7 @@ describe("petsApi", () => {
           species: { id: "s1", name: "Dog", imageUrl: null },
           breed: { id: "b1", name: "Labrador Retriever" },
           birthDate: "2020-01-01",
+          weightKg: 12.5,
           expectedLifeSpanYears: 12
         }
       ];
@@ -47,6 +48,7 @@ describe("petsApi", () => {
         species: { id: "s1", name: "Dog", imageUrl: null },
         breed: { id: "b1", name: "Labrador Retriever" },
         birthDate: "2020-01-01",
+        weightKg: 12.5,
         expectedLifeSpanYears: 12
       };
       mockGet.mockResolvedValue({ data: pet });
@@ -64,7 +66,8 @@ describe("petsApi", () => {
         name: "Rex",
         speciesId: "s1",
         breedId: "b1",
-        birthDate: "2020-01-01"
+        birthDate: "2020-01-01",
+        weightKg: 12.5
       };
       const created = {
         id: "1",
@@ -73,6 +76,7 @@ describe("petsApi", () => {
         species: { id: "s1", name: "Dog", imageUrl: null },
         breed: { id: "b1", name: "Labrador Retriever" },
         birthDate: "2020-01-01",
+        weightKg: 12.5,
         expectedLifeSpanYears: null
       };
       mockPost.mockResolvedValue({ data: created });

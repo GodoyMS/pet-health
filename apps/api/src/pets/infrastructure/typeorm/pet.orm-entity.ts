@@ -34,6 +34,10 @@ export class PetOrmEntity {
   @Column({ type: "date" })
   birthDate!: string;
 
+  /** Body mass in kilograms */
+  @Column({ type: "double precision", nullable: true })
+  weightKg!: number | null;
+
   @Column({ type: "int", nullable: true })
   expectedLifeSpanYears!: number | null;
 }

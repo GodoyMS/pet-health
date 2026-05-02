@@ -5,6 +5,7 @@ import { AuthModule } from "./auth/auth.module";
 import { UsersModule } from "./users/users.module";
 import { PetsModule } from "./pets/pets.module";
 import { SpeciesModule } from "./species/species.module";
+import { PreventiveCareRulesModule } from "./preventive-care-rules/preventive-care-rules.module";
 import { ormConfig } from "./config/ormconfig";
 
 @Module({
@@ -15,7 +16,8 @@ import { ormConfig } from "./config/ormconfig";
     AuthModule,
     UsersModule,
     SpeciesModule,
-    PetsModule
+    PetsModule,
+    PreventiveCareRulesModule
   ]
 })
 export class AppModule {}

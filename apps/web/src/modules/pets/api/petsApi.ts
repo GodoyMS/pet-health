@@ -18,6 +18,7 @@ export interface PetDTO {
   species: SpeciesSummary;
   breed: BreedSummary | null;
   birthDate: string;
+  weightKg: number | null;
   expectedLifeSpanYears: number | null;
 }
 
@@ -26,6 +27,7 @@ export interface CreatePetPayload {
   speciesId: string;
   breedId: string;
   birthDate: string;
+  weightKg: number;
   expectedLifeSpanYears?: number | null;
 }
 

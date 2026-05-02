@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+import { PreventiveCareRuleOrmEntity } from "../../../preventive-care-rules/infrastructure/typeorm/preventive-care-rule.orm-entity";
 import { PetOrmEntity } from "../../../pets/infrastructure/typeorm/pet.orm-entity";
 import { BreedOrmEntity } from "./breed.orm-entity";
 
@@ -28,4 +29,10 @@ export class SpeciesOrmEntity {
 
   @OneToMany(() => PetOrmEntity, (pet) => pet.species)
   pets!: PetOrmEntity[];
+
+  @OneToMany(
+    () => PreventiveCareRuleOrmEntity,
+    (rule) => rule.species
+  )
+  preventiveCareRules!: PreventiveCareRuleOrmEntity[];
 }

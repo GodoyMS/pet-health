@@ -23,6 +23,7 @@ describe("toPetWithSpecies", () => {
       species,
       breed,
       birthDate: "2020-01-15",
+      weightKg: 28.5,
       expectedLifeSpanYears: 12
     } as PetOrmEntity;
 
@@ -42,6 +43,7 @@ describe("toPetWithSpecies", () => {
         name: "Labrador Retriever"
       },
       birthDate: "2020-01-15",
+      weightKg: 28.5,
       expectedLifeSpanYears: 12
     });
   });
@@ -61,12 +63,14 @@ describe("toPetWithSpecies", () => {
       species,
       breed,
       birthDate: "2021-06-01",
+      weightKg: null,
       expectedLifeSpanYears: null
     } as PetOrmEntity;
 
     const result = toPetWithSpecies(entity);
 
     expect(result.species.imageUrl).toBeNull();
+    expect(result.weightKg).toBeNull();
     expect(result.expectedLifeSpanYears).toBeNull();
   });
 });

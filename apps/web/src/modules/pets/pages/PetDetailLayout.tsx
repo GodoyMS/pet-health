@@ -98,6 +98,12 @@ export function PetDetailLayout() {
                 <Icon name="pets" aria-hidden />
                 {pet.breed?.name ?? "—"}
               </Badge>
+              {pet.weightKg != null ? (
+                <Badge variant="outline">
+                  <Icon name="monitor_weight" aria-hidden />
+                  {pet.weightKg.toFixed(1)} kg
+                </Badge>
+              ) : null}
 
             </div>
             

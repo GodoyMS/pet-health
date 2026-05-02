@@ -22,9 +22,11 @@ import {
 import {
   IsInt,
   IsISO8601,
+  IsNumber,
   IsOptional,
   IsString,
   IsUUID,
+  Max,
   Min,
   MinLength
 } from "class-validator";
@@ -63,6 +65,8 @@ class PetWithSpeciesDto {
   breed!: BreedSummaryDto;
   @ApiProperty({ example: "2020-05-15" })
   birthDate!: string;
+  @ApiProperty({ nullable: true, example: 8.4, description: "Body mass in kilograms" })
+  weightKg!: number | null;
   @ApiProperty({ nullable: true })
   expectedLifeSpanYears!: number | null;
 }
@@ -84,6 +88,12 @@ class CreatePetDto {
   @ApiProperty({ example: "2020-05-15", description: "ISO 8601 date (YYYY-MM-DD)" })
   @IsISO8601({ strict: true }, { message: "birthDate must be a valid ISO 8601 date (YYYY-MM-DD)" })
   birthDate!: string;
+
+  @ApiProperty({ example: 8.4, description: "Body mass in kilograms" })
+  @IsNumber({ maxDecimalPlaces: 2 })
+  @Min(0.01)
+  @Max(9999)
+  weightKg!: number;
 
   @ApiPropertyOptional({ example: 12, minimum: 1 })
   @IsOptional()
@@ -133,6 +143,7 @@ export class PetsController {
       speciesId: body.speciesId,
       breedId: body.breedId,
       birthDate: body.birthDate,
+      weightKg: body.weightKg,
       expectedLifeSpanYears: body.expectedLifeSpanYears ?? null
     });
   }

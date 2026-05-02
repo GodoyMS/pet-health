@@ -10,8 +10,7 @@ import {
   inferLifeStageLabel
 } from "../utils/petAge";
 
-/** Demo metrics until backend supports them */
-const MOCK_WEIGHT_KG = 12.4;
+/** Demo metric until backend supports it */
 const MOCK_AWARENESS_SCORE = 82;
 
 function StatCard({
@@ -85,8 +84,16 @@ export function PetOverviewPage() {
           <StatCard label="Life stage" value={lifeStage} hint="Estimated (demo)" />
           <StatCard
             label="Weight"
-            value={`${MOCK_WEIGHT_KG.toFixed(1)} kg`}
-            hint="Last weigh-in (demo)"
+            value={
+              pet.weightKg != null
+                ? `${pet.weightKg.toFixed(1)} kg`
+                : "—"
+            }
+            hint={
+              pet.weightKg != null
+                ? "Recorded at registration"
+                : "Not set yet"
+            }
           />
           <StatCard
             label="Awareness score"

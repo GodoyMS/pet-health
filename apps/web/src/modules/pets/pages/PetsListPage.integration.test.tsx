@@ -58,6 +58,7 @@ describe("PetsListPage (integration)", () => {
           species: { id: "s1", name: "Dog", imageUrl: null },
           birthDate: "2020-01-01",
           breed: { id: "b1", name: "Labrador Retriever" },
+          weightKg: 12.5,
           expectedLifeSpanYears: 12
         }
       ],

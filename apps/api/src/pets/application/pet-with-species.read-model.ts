@@ -20,5 +20,6 @@ export interface PetWithSpecies {
   species: SpeciesSummary;
   breed: BreedSummary | null;
   birthDate: string;
+  weightKg: number | null;
   expectedLifeSpanYears: number | null;
 }

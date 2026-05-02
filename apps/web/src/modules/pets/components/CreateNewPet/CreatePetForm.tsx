@@ -26,6 +26,7 @@ import { useCreatePet } from "../../hooks/useCreatePet";
 import {
   createPetFormSchema,
   emptyCreatePetForm,
+  parseWeightKgFromForm,
   type CreatePetFormValues
 } from "../../schemas/createPetForm.schema";
 
@@ -78,7 +79,8 @@ export function CreatePetForm({ onSuccess, onCancel }: CreatePetFormProps) {
         name: values.name.trim(),
         speciesId: values.speciesId,
         breedId: values.breedId,
-        birthDate: values.birthDate
+        birthDate: values.birthDate,
+        weightKg: parseWeightKgFromForm(values.weightKg)
       },
       {
         onSuccess: () => {
@@ -233,6 +235,29 @@ export function CreatePetForm({ onSuccess, onCancel }: CreatePetFormProps) {
                 <FormLabel>Birth date</FormLabel>
                 <FormControl>
                   <Input type="date" max={todayIso} disabled={createPet.isPending} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="weightKg"
+            render={() => (
+              <FormItem>
+                <FormLabel>Weight (kg)</FormLabel>
+                <FormControl>
+                  <Input
+                    type="number"
+                    inputMode="decimal"
+                    step="0.1"
+                    min={0.01}
+                    max={9999}
+                    placeholder="e.g. 12.5"
+                    autoComplete="off"
+                    disabled={createPet.isPending}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

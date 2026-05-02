@@ -1,11 +1,24 @@
-export class Pet {
-  constructor(
-    public readonly id: string,
-    public readonly ownerId: string,
-    public readonly name: string,
-    public readonly speciesId: string,
-    public readonly breedId: string,
-    public readonly birthDate: Date,
-    public readonly expectedLifeSpanYears: number | null
-  ) {}
-}
+export class Pet {
+
+  constructor(
+
+    public readonly id: string,
+
+    public readonly ownerId: string,
+
+    public readonly name: string,
+
+    public readonly speciesId: string,
+
+    public readonly breedId: string,
+
+    public readonly birthDate: Date,
+
+    public readonly weightKg: number | null,
+
+    public readonly expectedLifeSpanYears: number | null
+
+  ) {}
+
+}
+

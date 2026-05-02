@@ -26,7 +26,23 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       { name: "German Shepherd" },
       { name: "French Bulldog" },
       { name: "Poodle" },
-      { name: "Mixed / Other" }
+      { name: "Beagle" },
+      { name: "Rottweiler" },
+      { name: "Yorkshire Terrier" },
+      { name: "Boxer" },
+      { name: "Dachshund" },
+      { name: "Siberian Husky" },
+      { name: "Shih Tzu" },
+      { name: "Chihuahua" },
+      { name: "Border Collie" },
+      { name: "Cocker Spaniel" },
+      { name: "Doberman Pinscher" },
+      { name: "Great Dane" },
+      { name: "Pug" },
+      { name: "Maltese" },
+      { name: "Akita" },
+      { name: "Mixed" },
+      { name: "Other" }
     ]
   },
   {
@@ -43,7 +59,15 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       { name: "Maine Coon" },
       { name: "British Shorthair" },
       { name: "Ragdoll" },
-      { name: "Domestic Shorthair" }
+      { name: "Bengal" },
+      { name: "Sphynx" },
+      { name: "Scottish Fold" },
+      { name: "Russian Blue" },
+      { name: "Norwegian Forest Cat" },
+      { name: "Exotic Shorthair" },
+      { name: "Domestic Shorthair" },
+      { name: "Mixed" },
+      { name: "Other" }
     ]
   },
   {
@@ -60,6 +84,10 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       { name: "Canary" },
       { name: "Lovebird" },
       { name: "Conure" },
+      { name: "African Grey Parrot" },
+      { name: "Macaw" },
+      { name: "Finch" },
+      { name: "Mixed" },
       { name: "Other" }
     ]
   },
@@ -76,7 +104,10 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       { name: "Mini Rex" },
       { name: "Dutch" },
       { name: "Lionhead" },
-      { name: "Mixed" }
+      { name: "Flemish Giant" },
+      { name: "English Lop" },
+      { name: "Mixed" },
+      { name: "Other" }
     ]
   },
   {
@@ -93,6 +124,9 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       { name: "Guppy" },
       { name: "Tetra" },
       { name: "Angelfish" },
+      { name: "Cichlid" },
+      { name: "Molly" },
+      { name: "Mixed" },
       { name: "Other" }
     ]
   },
@@ -109,6 +143,8 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       { name: "Dwarf Roborovski" },
       { name: "Winter White" },
       { name: "Chinese" },
+      { name: "Campbell's Dwarf" },
+      { name: "Mixed" },
       { name: "Other" }
     ]
   },
@@ -121,10 +157,12 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       "https://images.unsplash.com/photo-1502786129293-79981df4e689?auto=format&fit=crop&w=80&q=80",
     order: 7,
     breeds: [
-      { name: "Red-eared slider" },
-      { name: "Box turtle" },
-      { name: "Painted turtle" },
-      { name: "Map turtle" },
+      { name: "Red-eared Slider" },
+      { name: "Box Turtle" },
+      { name: "Painted Turtle" },
+      { name: "Map Turtle" },
+      { name: "Snapping Turtle" },
+      { name: "Mixed" },
       { name: "Other" }
     ]
   },
@@ -141,7 +179,9 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
       { name: "Abyssinian" },
       { name: "Peruvian" },
       { name: "Teddy" },
-      { name: "Mixed" }
+      { name: "Silkie" },
+      { name: "Mixed" },
+      { name: "Other" }
     ]
   }
 ];

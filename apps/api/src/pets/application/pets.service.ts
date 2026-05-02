@@ -18,6 +18,7 @@ export interface CreatePetInput {
   speciesId: string;
   breedId: string;
   birthDate: string;
+  weightKg: number;
   expectedLifeSpanYears?: number | null;
 }
 
@@ -87,6 +88,7 @@ export class PetsService {
       species,
       breed,
       birthDate: input.birthDate,
+      weightKg: input.weightKg,
       expectedLifeSpanYears: input.expectedLifeSpanYears ?? null
     });
     const saved = await this.repo.save(entity);

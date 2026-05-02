@@ -20,6 +20,7 @@ export function toPetWithSpecies(entity: PetOrmEntity): PetWithSpecies {
       name: entity.breed?.name
     } : null,
     birthDate: entity.birthDate,
+    weightKg: entity.weightKg != null ? Number(entity.weightKg) : null,
     expectedLifeSpanYears: entity.expectedLifeSpanYears
   };
 }

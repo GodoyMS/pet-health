@@ -34,6 +34,9 @@ const PetListCard = ({ pet }: { pet: PetDTO }) => {
             </p>
             <div className="grid grid-cols-2 gap-2 mt-3 text-xs text-muted-foreground">
               <span>Born: {pet.birthDate}</span>
+              {pet.weightKg != null ? (
+                <span>Weight: {pet.weightKg.toFixed(1)} kg</span>
+              ) : null}
               {pet.expectedLifeSpanYears != null ? (
                 <span>Est. lifespan: {pet.expectedLifeSpanYears} yr</span>
               ) : null}
