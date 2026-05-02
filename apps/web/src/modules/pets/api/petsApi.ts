@@ -38,5 +38,8 @@ export const petsApi = {
   },
   create(payload: CreatePetPayload) {
     return httpClient.post<PetDTO>("/pets", payload);
+  },
+  delete(id: string) {
+    return httpClient.delete<void>(`/pets/${id}`);
   }
 };

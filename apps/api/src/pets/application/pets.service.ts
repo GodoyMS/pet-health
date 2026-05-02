@@ -40,7 +40,6 @@ export class PetsService {
       relations: ["owner", "species", "breed"],
       order: { name: "ASC" }
     });
-    console.log(pets);
     return pets.map(toPetWithSpecies);
   }
 
@@ -100,5 +99,15 @@ export class PetsService {
       throw new NotFoundException("Pet not found after create");
     }
     return toPetWithSpecies(withRelations);
+  }
+
+  async deleteForUser(userId: string, id: string): Promise<void> {
+    const pet = await this.repo.findOne({
+      where: { id, owner: { id: userId } }
+    });
+    if (!pet) {
+      throw new NotFoundException("Pet not found");
+    }
+    await this.repo.remove(pet);
   }
 }

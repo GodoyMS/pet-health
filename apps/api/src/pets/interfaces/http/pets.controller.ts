@@ -1,7 +1,10 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   UseGuards
@@ -132,5 +135,18 @@ export class PetsController {
       birthDate: body.birthDate,
       expectedLifeSpanYears: body.expectedLifeSpanYears ?? null
     });
+  }
+
+  @Delete(":id")
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @UseGuards(AuthGuard)
+  @ApiCookieAuth("auth_token")
+  @ApiOperation({ summary: "Delete a pet (cannot be undone)" })
+  @ApiParam({ name: "id", description: "Pet UUID" })
+  @ApiResponse({ status: 204, description: "Pet deleted" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
+  @ApiResponse({ status: 404, description: "Pet not found" })
+  async remove(@CurrentUser() user: User, @Param("id") id: string): Promise<void> {
+    await this.petsService.deleteForUser(user.id, id);
   }
 }

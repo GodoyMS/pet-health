@@ -2,7 +2,6 @@ import {
   SidebarInset,
   SidebarProvider,
   Sidebar,
-  SidebarTrigger,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
@@ -18,6 +17,7 @@ import {
 } from "@repo/ui";
 import NavMain from "@shared/components/NavMain";
 import NavUser from "@shared/components/NavUser";
+import { DashboardHeader } from "@shared/components/DashboardHeader";
 import { menuItems } from "@shared/constants/menu";
 import React from "react";
 import { Link, Outlet } from "react-router-dom";
@@ -34,9 +34,11 @@ const DashboardLayout = () => {
     >
       <TooltipProvider>
         <AppSidebar variant="inset" />
-        <SidebarInset className="p-4">
-          <SidebarTrigger />
-          <Outlet />
+        <SidebarInset className="flex min-h-svh flex-col overflow-hidden">
+          <DashboardHeader />
+          <div className="flex flex-1 flex-col gap-4 p-4">
+            <Outlet />
+          </div>
         </SidebarInset>
       </TooltipProvider>
     </SidebarProvider>
