@@ -5,6 +5,8 @@
   "compilerOptions": {
     "builder": "tsc",
     "tsConfigPath": "tsconfig.build.json",
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "assets": ["**/*.generated.json"],
+    "watchAssets": true
   }
 }

@@ -9,6 +9,8 @@ class Config {
   public DATABASE_URL: string | undefined;
   public PORT: string | undefined;
   public WEB_ORIGIN: string | undefined;
+  /** Only for `pnpm run ai:generate-rules` — not required at API runtime. */
+  public DEEPSEEK_API_KEY: string | undefined;
 
   constructor() {
     this.NODE_ENV = process.env.NODE_ENV;
@@ -16,6 +18,7 @@ class Config {
     this.DATABASE_URL = process.env.DATABASE_URL;
     this.PORT = process.env.PORT;
     this.WEB_ORIGIN = process.env.WEB_ORIGIN;
+    this.DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY;
   }
 
   public validateConfig(): void {
