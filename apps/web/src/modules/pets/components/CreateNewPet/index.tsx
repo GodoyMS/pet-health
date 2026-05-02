@@ -1,31 +1,46 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogTrigger,
   DialogContent,
   DialogHeader,
-  DialogFooter,
   DialogTitle,
-  DialogDescription,
-  DialogClose,
-  Button,
+  DialogDescription
 } from "@repo/ui";
 import CreatePetForm from "./CreatePetForm";
-const CreateNewPet = ({trigger}: {trigger: React.ReactNode}) => {
+
+type CreateNewPetProps = {
+  trigger: React.ReactNode;
+};
+
+const CreateNewPet = ({ trigger }: CreateNewPetProps) => {
+  const [open, setOpen] = useState(false);
+  const [formMountKey, setFormMountKey] = useState(0);
+
   return (
-    <Dialog>
-      <DialogTrigger>{trigger}</DialogTrigger>
-      <DialogContent className="md:max-w-2xl w-full">
-        <DialogHeader>
-          <DialogTitle>Create New Pet</DialogTitle>
-          <DialogDescription>
-            <CreatePetForm/>
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) setFormMountKey((k) => k + 1);
+      }}
+    >
+      <DialogTrigger asChild>{trigger}</DialogTrigger>
+      <DialogContent className="max-h-[min(90vh,720px)] overflow-y-auto sm:max-w-lg md:max-w-xl">
+        <DialogHeader className="text-left">
+          <DialogTitle className="text-xl font-semibold tracking-tight">
+            Add a pet
+          </DialogTitle>
+          <DialogDescription className="text-muted-foreground">
+            Pick a species and breed, then enter a name and birth date. All fields
+            are required.
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
-          <DialogClose>Cancel</DialogClose>
-          <Button>Create</Button>
-        </DialogFooter>
+        <CreatePetForm
+          key={formMountKey}
+          onSuccess={() => setOpen(false)}
+          onCancel={() => setOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   );
