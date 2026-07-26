@@ -100,11 +100,6 @@ export function NeighbourhoodPage() {
     [selected, nearbyPets]
   );
 
-  const packPets = useMemo(
-    () => pets.filter((pet) => pet.id !== activePet?.id && pet.location),
-    [pets, activePet?.id]
-  );
-
   const isBusy =
     locations.movePet.isPending ||
     locations.followOwner.isPending ||
@@ -200,7 +195,6 @@ export function NeighbourhoodPage() {
             apiKey={API_KEY}
             activePet={activePet}
             activePosition={activePosition}
-            packPets={packPets}
             nearbyPets={nearbyPets}
             radiusMeters={radius}
             ownerName="You"
@@ -208,7 +202,6 @@ export function NeighbourhoodPage() {
             isPlacing={isPlacing}
             isBusy={isBusy}
             onSelect={setSelected}
-            onSwitchPet={setActivePet}
             onMovePet={({ lat, lng }) => {
               setIsPlacing(false);
               locations.movePet.mutate({ petId: activePet.id, lat, lng });

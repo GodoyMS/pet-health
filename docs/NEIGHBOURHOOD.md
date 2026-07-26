@@ -166,9 +166,12 @@ Instead, two stages:
 The box is inflated by one privacy cell so a pet whose *fuzzed* position lands
 inside the radius is never dropped by the prefilter.
 
-Excluded from results: non-discoverable pets and pets of the same owner. Your
-own other pets are drawn client-side from the tab-bar payload instead (as
-"your pack"), which avoids a second endpoint entirely.
+Excluded from results: non-discoverable pets and pets of the same owner.
+
+The map deliberately shows **only the active pet** from the user's household.
+Drawing the whole household at once made it ambiguous whose neighbourhood was
+on screen — which pet the radius ring belonged to, and which pet a friend
+request would come from. Other pets are reached through the tab bar instead.
 
 `ST_DWithin` is the upgrade path if pet counts ever make the bbox scan hurt;
 the service interface won't change.
@@ -192,8 +195,8 @@ api/          neighbourhoodApi.ts · petFriendshipsApi.ts
 hooks/        queryKeys.ts · useNeighbourhood.ts · useMapCamera.ts
               usePetLocationMutations.ts · useFriendshipMutations.ts
 components/   PetTabBar · NeighbourhoodMap · ActivePetMarker · NearbyPetMarker
-              PackPetMarker · NearbyPetPopover · FriendshipSidebar
-              LocationEditorBar · CameraControls · RadiusRing · PetAvatar
+              NearbyPetPopover · FriendshipSidebar · LocationEditorBar
+              CameraControls · RadiusRing · PetAvatar
 utils/        speciesTheme.ts · format.ts · motion.ts
 pages/        NeighbourhoodPage.tsx
 ```

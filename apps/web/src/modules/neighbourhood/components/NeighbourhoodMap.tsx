@@ -14,7 +14,6 @@ import { ActivePetMarker } from "./ActivePetMarker";
 import { CameraControls } from "./CameraControls";
 import { NearbyPetMarker } from "./NearbyPetMarker";
 import { NearbyPetPopover } from "./NearbyPetPopover";
-import { PackPetMarker } from "./PackPetMarker";
 import { RadiusRing } from "./RadiusRing";
 
 const MAP_ID =
@@ -26,7 +25,6 @@ interface NeighbourhoodMapProps {
   apiKey: string;
   activePet: MyNeighbourhoodPet;
   activePosition: { lat: number; lng: number };
-  packPets: MyNeighbourhoodPet[];
   nearbyPets: NearbyPet[];
   radiusMeters: number;
   ownerName: string;
@@ -34,7 +32,6 @@ interface NeighbourhoodMapProps {
   isPlacing: boolean;
   isBusy: boolean;
   onSelect: (pet: NearbyPet | null) => void;
-  onSwitchPet: (petId: string) => void;
   onMovePet: (position: { lat: number; lng: number }) => void;
   onSendRequest: (pet: NearbyPet) => void;
   onCancelRequest: (friendshipId: string) => void;
@@ -81,7 +78,6 @@ export function NeighbourhoodMap(props: NeighbourhoodMapProps) {
 function MapContents({
   activePet,
   activePosition,
-  packPets,
   nearbyPets,
   radiusMeters,
   ownerName,
@@ -89,7 +85,6 @@ function MapContents({
   isPlacing,
   isBusy,
   onSelect,
-  onSwitchPet,
   onMovePet,
   onSendRequest,
   onCancelRequest,
@@ -110,10 +105,6 @@ function MapContents({
         radiusMeters={radiusMeters}
         color={theme.color}
       />
-
-      {packPets.map((pet) => (
-        <PackPetMarker key={pet.id} pet={pet} onSelect={onSwitchPet} />
-      ))}
 
       {nearbyPets.map((pet) => (
         <NearbyPetMarker
