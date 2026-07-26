@@ -16,6 +16,7 @@
     "dev:ui": "turbo run dev --filter=@repo/ui",
     "dev:web": "turbo run dev --filter=web",
     "dev:api": "turbo run dev --filter=api",
+    "dev:admin": "turbo run dev --filter=admin",
     "test:web": "turbo run test --filter=web",
     "test:api": "turbo run test --filter=api",
     "test:coverage:web": "turbo run test:coverage --filter=web",

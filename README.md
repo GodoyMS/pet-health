@@ -5,6 +5,7 @@ Monorepo for the Pet Health platform using Turborepo, with a React/Vite web app 
 ### Structure
 
 - `apps/web` - React + Vite web application
+- `apps/admin` - Internal admin backoffice (dark UI, admin-role gated, same API)
 - `apps/api` - NestJS API server with TypeORM and cookie-based auth
 - `packages/config-eslint` - Shared ESLint configuration
 - `packages/tailwind-config` - Shared Tailwind and global CSS (shadcn-style)
@@ -18,4 +19,8 @@ Common scripts:
 - `pnpm dev:ui` - Run Storybook for UI Elements
 - `pnpm dev:web` - Starts frontend application on dev mode
 - `pnpm dev:api` - Starts backend application on dev mode
+- `pnpm dev:admin` - Starts the admin backoffice on dev mode (http://localhost:5174)
+
+See `apps/admin/README.md` for how to grant admin access
+(`pnpm run admin:promote <email>` or the `ADMIN_EMAILS` env var).
 
