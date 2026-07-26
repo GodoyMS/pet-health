@@ -28,9 +28,20 @@ export const RegisterPage = () => {
 
   const registerMutation = useMutation({
     mutationFn: (values: RegisterFormValues) => authApi.register(values),
-    onSuccess: () => {
-      navigate("/login");
-      toast.success("Account created! Please sign in.");
+    onSuccess: (result) => {
+      const params = new URLSearchParams({ email: result.email });
+      if (result.previewCode) {
+        params.set("previewCode", result.previewCode);
+      }
+      toast.success("Check your email for a verification code.");
+      navigate(`/verify-email?${params.toString()}`);
+    },
+    onError: (error: unknown) => {
+      const msg = (error as { response?: { data?: { message?: string } } })?.response
+        ?.data?.message;
+      if (typeof msg === "string") {
+        toast.error(msg);
+      }
     }
   });
 

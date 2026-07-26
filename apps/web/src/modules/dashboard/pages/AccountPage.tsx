@@ -1,5 +1,6 @@
-import { Badge, Icon, Separator, Skeleton } from "@repo/ui";
+import { Badge, Button, Icon, Separator, Skeleton } from "@repo/ui";
 import { useGetUser } from "@shared/hooks/useGetUser";
+import { useDeleteAccount } from "@shared/hooks/useDeleteAccount";
 import { GoogleIcon } from "@modules/auth/components/GoogleIcon";
 import type { AuthProvider } from "@modules/auth/api/authApi";
 
@@ -58,6 +59,14 @@ function AvatarInitials({ name }: { name: string }) {
 
 export function AccountPage() {
   const { data: user, isLoading } = useGetUser();
+  const { mutate: deleteAccount, isPending: isDeleting } = useDeleteAccount();
+
+  const handleDeleteAccount = () => {
+    const confirmed = window.confirm(
+      "Permanently delete your account? This will remove all your pets, health logs, reports and reminders. This action cannot be undone."
+    );
+    if (confirmed) deleteAccount();
+  };
 
   return (
     <section className="mx-auto max-w-2xl space-y-8">
@@ -141,7 +150,7 @@ export function AccountPage() {
         </div>
       </div>
 
-      {/* Danger zone placeholder */}
+      {/* Danger zone */}
       <div className="rounded-xl border border-destructive/30 bg-card shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-destructive/20 bg-destructive/5">
           <h2 className="text-sm font-semibold text-destructive flex items-center gap-2">
@@ -150,9 +159,28 @@ export function AccountPage() {
           </h2>
         </div>
         <div className="px-6 py-5">
-          <p className="text-sm text-muted-foreground">
-            Account deletion and data export will be available in a future update.
-          </p>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground">Delete account</p>
+              <p className="mt-1 text-xs text-muted-foreground leading-relaxed">
+                Permanently delete your account and all related data — pets, health logs,
+                AI reports, and care reminders. This action cannot be undone.
+              </p>
+            </div>
+            <Button
+              variant="destructive"
+              className="shrink-0"
+              disabled={isDeleting}
+              onClick={handleDeleteAccount}
+            >
+              {isDeleting ? (
+                <Icon name="progress_activity" className="animate-spin" />
+              ) : (
+                <Icon name="delete" />
+              )}
+              {isDeleting ? "Deleting…" : "Delete account"}
+            </Button>
+          </div>
         </div>
       </div>
     </section>

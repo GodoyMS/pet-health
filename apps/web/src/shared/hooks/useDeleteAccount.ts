@@ -1,4 +1,5 @@
 import { authApi } from "@modules/auth/api/authApi";
+import { toast } from "@repo/ui";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 
@@ -10,6 +11,9 @@ export const useDeleteAccount = () => {
         onSuccess: () => {
             queryClient.clear();
             navigate("/login");
+        },
+        onError: () => {
+            toast.error("Could not delete your account. Please try again.");
         },
     });
     return deleteAccountMutation;

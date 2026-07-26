@@ -51,6 +51,12 @@ export const LoginPage = () => {
     },
     onError: (error: any) => {
       const msg = error?.response?.data?.message;
+      if (typeof msg === "string" && msg.includes("not verified")) {
+        const email = form.getValues("email").trim().toLowerCase();
+        toast.error("Please verify your email first.");
+        navigate(`/verify-email?email=${encodeURIComponent(email)}`);
+        return;
+      }
       if (typeof msg === "string" && msg.includes("Google")) {
         toast.error(msg);
       }
@@ -129,6 +135,14 @@ export const LoginPage = () => {
                 {form.formState.errors.password.message}
               </p>
             )}
+            <div className="flex justify-end">
+              <Link
+                to="/forgot-password"
+                className="text-xs font-medium text-primary hover:underline"
+              >
+                Forgot password?
+              </Link>
+            </div>
           </div>
 
           {loginMutation.isError && (

@@ -2,8 +2,10 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { AppShell } from "@app/shell/AppShell";
 
+import { ForgotPasswordPage } from "@modules/auth/pages/ForgotPasswordPage";
 import { LoginPage } from "@modules/auth/pages/LoginPage";
 import { RegisterPage } from "@modules/auth/pages/RegisterPage";
+import { VerifyEmailPage } from "@modules/auth/pages/VerifyEmailPage";
 
 import { AccountPage } from "@modules/dashboard/pages/AccountPage";
 import { DashboardHomePage } from "@modules/dashboard/pages/DashboardHomePage";
@@ -36,6 +38,8 @@ export const router = createBrowserRouter([
       { index: true, element: <LoginPage /> },
       { path: "login", element: <LoginPage /> },
       { path: "register", element: <RegisterPage /> },
+      { path: "verify-email", element: <VerifyEmailPage /> },
+      { path: "forgot-password", element: <ForgotPasswordPage /> },
       {
         path: "dashboard",
         element: <DashboardLayout />,
