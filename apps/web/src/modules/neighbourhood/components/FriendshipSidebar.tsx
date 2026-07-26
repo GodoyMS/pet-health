@@ -1,55 +1,117 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button, Icon, Skeleton } from "@repo/ui";
 
-import type { FriendshipRequestView } from "../api/petFriendshipsApi";
-import type { PetFriendView } from "../api/petFriendshipsApi";
+import type { MyNeighbourhoodPet } from "../api/neighbourhoodApi";
+import type {
+  FriendshipRequestView,
+  PetFriendshipView
+} from "../api/petFriendshipsApi";
 import { formatRelativeTime } from "../utils/format";
 import { PetAvatar } from "./PetAvatar";
 
 type Tab = "incoming" | "outgoing" | "friends";
 
+/** Whether the panel describes the whole household or just the active pet. */
+type Scope = "all" | "active";
+
 interface FriendshipSidebarProps {
   incoming: FriendshipRequestView[];
   outgoing: FriendshipRequestView[];
-  friends: PetFriendView[];
-  activePetName: string;
+  friends: PetFriendshipView[];
+  activePet: MyNeighbourhoodPet;
+  /** True when the user owns more than one pet; hides the filter otherwise. */
+  hasMultiplePets: boolean;
   isLoading: boolean;
   isBusy: boolean;
   onRespond: (id: string, action: "accept" | "reject") => void;
   onCancel: (id: string) => void;
+  onUnfriend: (id: string) => void;
 }
 
 /**
- * The friendship inbox.
+ * The friendship panel.
  *
- * Incoming and outgoing aggregate across *every* pet the user owns, which is
- * why each card names both sides of the pairing — with several pets it must be
- * unambiguous which of yours is involved.
+ * All three tabs describe the *same* set of pets, chosen by one scope filter
+ * at the top. Previously requests were household-wide while friends were
+ * silently scoped to the active pet, so counts across tabs didn't describe a
+ * consistent world and there was no way to tell which was which.
+ *
+ * Scope is also stated on every row (which of your pets is involved), so the
+ * list stays unambiguous even before anyone notices the filter.
  */
 export function FriendshipSidebar({
   incoming,
   outgoing,
   friends,
-  activePetName,
+  activePet,
+  hasMultiplePets,
   isLoading,
   isBusy,
   onRespond,
-  onCancel
+  onCancel,
+  onUnfriend
 }: FriendshipSidebarProps) {
   const [tab, setTab] = useState<Tab>("incoming");
+  // Household-wide by default: a request to any pet is time-sensitive, and
+  // hiding it behind a filter is how you miss it.
+  const [scope, setScope] = useState<Scope>("all");
+
+  const visible = useMemo(() => {
+    if (scope === "all" || !hasMultiplePets) {
+      return { incoming, outgoing, friends };
+    }
+    return {
+      incoming: incoming.filter((r) => r.addresseePet.id === activePet.id),
+      outgoing: outgoing.filter((r) => r.requesterPet.id === activePet.id),
+      friends: friends.filter((f) => f.myPet.id === activePet.id)
+    };
+  }, [scope, hasMultiplePets, incoming, outgoing, friends, activePet.id]);
 
   const tabs: { key: Tab; label: string; count: number }[] = [
-    { key: "incoming", label: "Requests", count: incoming.length },
-    { key: "outgoing", label: "Sent", count: outgoing.length },
-    { key: "friends", label: "Friends", count: friends.length }
+    { key: "incoming", label: "Requests", count: visible.incoming.length },
+    { key: "outgoing", label: "Sent", count: visible.outgoing.length },
+    { key: "friends", label: "Friends", count: visible.friends.length }
   ];
+
+  // Only meaningful when the filter is actually narrowing something.
+  const scopeLabel = scope === "all" ? "all your pets" : activePet.name;
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      <div className="flex items-center gap-1 border-b border-border/60 p-1.5">
+      {hasMultiplePets && (
+        <div className="flex items-center gap-1 border-b border-border/60 p-1.5">
+          <ScopeButton
+            active={scope === "all"}
+            onClick={() => setScope("all")}
+            label="All pets"
+            ariaLabel="Show friendships for all pets"
+          />
+          <ScopeButton
+            active={scope === "active"}
+            onClick={() => setScope("active")}
+            label={activePet.name}
+            ariaLabel={`Show friendships for ${activePet.name} only`}
+            avatar={
+              <PetAvatar
+                species={activePet.species}
+                name={activePet.name}
+                size={16}
+              />
+            }
+          />
+        </div>
+      )}
+
+      <div
+        role="tablist"
+        aria-label={`Friendships for ${scopeLabel}`}
+        className="flex items-center gap-1 border-b border-border/60 p-1.5"
+      >
         {tabs.map((t) => (
           <button
             key={t.key}
+            role="tab"
+            aria-selected={tab === t.key}
             type="button"
             onClick={() => setTab(t.key)}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-2 text-xs font-medium transition-colors ${
@@ -78,18 +140,25 @@ export function FriendshipSidebar({
         {isLoading ? (
           <SidebarSkeleton />
         ) : tab === "incoming" ? (
-          incoming.length === 0 ? (
+          visible.incoming.length === 0 ? (
             <EmptyState
               icon="mark_email_read"
               title="No pending requests"
-              body="When a neighbour's pet asks to be friends with one of yours, it'll show up here."
+              body={
+                scope === "active"
+                  ? `No one has asked to be friends with ${activePet.name} yet.`
+                  : "When a neighbour's pet asks to be friends with one of yours, it'll show up here."
+              }
             />
           ) : (
             <ul className="divide-y divide-border/50">
-              {incoming.map((request) => (
+              {visible.incoming.map((request) => (
                 <RequestCard
                   key={request.id}
-                  request={request}
+                  otherPet={request.requesterPet}
+                  myPet={request.addresseePet}
+                  relation="wants to meet"
+                  timestamp={request.createdAt}
                   actions={
                     <>
                       <Button
@@ -117,18 +186,25 @@ export function FriendshipSidebar({
             </ul>
           )
         ) : tab === "outgoing" ? (
-          outgoing.length === 0 ? (
+          visible.outgoing.length === 0 ? (
             <EmptyState
               icon="send"
               title="Nothing sent yet"
-              body="Tap a nearby pet on the map to send the first friend request."
+              body={
+                scope === "active"
+                  ? `${activePet.name} hasn't asked anyone to be friends yet.`
+                  : "Tap a nearby pet on the map to send the first friend request."
+              }
             />
           ) : (
             <ul className="divide-y divide-border/50">
-              {outgoing.map((request) => (
+              {visible.outgoing.map((request) => (
                 <RequestCard
                   key={request.id}
-                  request={request}
+                  otherPet={request.addresseePet}
+                  myPet={request.requesterPet}
+                  relation="was asked by"
+                  timestamp={request.createdAt}
                   actions={
                     <Button
                       size="sm"
@@ -144,27 +220,25 @@ export function FriendshipSidebar({
               ))}
             </ul>
           )
-        ) : friends.length === 0 ? (
+        ) : visible.friends.length === 0 ? (
           <EmptyState
             icon="diversity_1"
-            title={`${activePetName} has no friends yet`}
+            title={
+              scope === "active"
+                ? `${activePet.name} has no friends yet`
+                : "No friendships yet"
+            }
             body="Same-species pets nearby are highlighted on the map — say hello."
           />
         ) : (
           <ul className="divide-y divide-border/50">
-            {friends.map((friend) => (
-              <li key={friend.id} className="flex items-center gap-3 px-3.5 py-3">
-                <PetAvatar species={friend.species} name={friend.name} size={38} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">
-                    {friend.name}
-                  </p>
-                  <p className="truncate text-xs text-muted-foreground">
-                    {friend.species.name} · with {friend.ownerName}
-                  </p>
-                </div>
-                <Icon name="handshake" className="text-base text-emerald-500" />
-              </li>
+            {visible.friends.map((friendship) => (
+              <FriendCard
+                key={friendship.id}
+                friendship={friendship}
+                isBusy={isBusy}
+                onUnfriend={onUnfriend}
+              />
             ))}
           </ul>
         )}
@@ -173,49 +247,127 @@ export function FriendshipSidebar({
   );
 }
 
+function ScopeButton({
+  active,
+  onClick,
+  label,
+  ariaLabel,
+  avatar
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+  /** Spelled out, since a button named just "Milo" says nothing on its own. */
+  ariaLabel: string;
+  avatar?: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={ariaLabel}
+      aria-pressed={active}
+      className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-xs font-medium transition-colors ${
+        active
+          ? "bg-primary/12 text-primary"
+          : "text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {avatar}
+      <span className="max-w-[7rem] truncate">{label}</span>
+    </button>
+  );
+}
+
 /**
- * Facebook-style pairing card: requester pet → target pet, so the user can see
- * at a glance which of their pets was asked.
+ * Facebook-style pairing card. The other owner's pet leads, and a chip names
+ * which of *your* pets it concerns — the detail that makes a household-wide
+ * list readable.
  */
 function RequestCard({
-  request,
+  otherPet,
+  myPet,
+  relation,
+  timestamp,
   actions
 }: {
-  request: FriendshipRequestView;
-  /** Caller supplies already-wired buttons, including their disabled state. */
+  otherPet: { id: string; name: string; species: { id: string; name: string; imageUrl: string | null }; ownerName: string };
+  myPet: { id: string; name: string; species: { id: string; name: string; imageUrl: string | null } };
+  relation: string;
+  timestamp: string;
   actions: React.ReactNode;
 }) {
-  const { requesterPet, addresseePet } = request;
-
   return (
     <li className="px-3.5 py-3">
-      <div className="flex items-center gap-2">
-        <PetAvatar species={requesterPet.species} name={requesterPet.name} size={38} />
+      <div className="flex items-start gap-2.5">
+        <PetAvatar species={otherPet.species} name={otherPet.name} size={38} />
 
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-foreground">
-            {requesterPet.name}
+            {otherPet.name}
           </p>
           <p className="truncate text-[11px] text-muted-foreground">
-            {requesterPet.species.name} · {requesterPet.ownerName}
+            {otherPet.species.name} · {otherPet.ownerName}
           </p>
-        </div>
-
-        <Icon name="arrow_forward" className="shrink-0 text-sm text-muted-foreground" />
-
-        <div className="flex min-w-0 items-center gap-1.5">
-          <PetAvatar species={addresseePet.species} name={addresseePet.name} size={28} />
-          <span className="truncate text-xs font-medium text-foreground">
-            {addresseePet.name}
-          </span>
+          <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+            <span>{relation}</span>
+            <PetAvatar species={myPet.species} name={myPet.name} size={14} />
+            <span className="max-w-[6rem] truncate font-medium text-foreground">
+              {myPet.name}
+            </span>
+            <span aria-hidden>·</span>
+            <span>{formatRelativeTime(timestamp)}</span>
+          </p>
         </div>
       </div>
 
-      <p className="mt-1.5 text-[11px] text-muted-foreground">
-        {formatRelativeTime(request.createdAt)}
-      </p>
-
       <div className="mt-2.5 flex gap-2">{actions}</div>
+    </li>
+  );
+}
+
+function FriendCard({
+  friendship,
+  isBusy,
+  onUnfriend
+}: {
+  friendship: PetFriendshipView;
+  isBusy: boolean;
+  onUnfriend: (id: string) => void;
+}) {
+  const { friendPet, myPet } = friendship;
+
+  return (
+    <li className="group flex items-start gap-2.5 px-3.5 py-3">
+      <PetAvatar species={friendPet.species} name={friendPet.name} size={38} />
+
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium text-foreground">
+          {friendPet.name}
+        </p>
+        <p className="truncate text-[11px] text-muted-foreground">
+          {friendPet.species.name} · {friendPet.ownerName}
+        </p>
+        <p className="mt-1 flex items-center gap-1 text-[11px] text-muted-foreground">
+          <Icon name="handshake" className="text-[12px] text-emerald-500" />
+          <span>friends with</span>
+          <PetAvatar species={myPet.species} name={myPet.name} size={14} />
+          <span className="max-w-[6rem] truncate font-medium text-foreground">
+            {myPet.name}
+          </span>
+        </p>
+      </div>
+
+      <button
+        type="button"
+        disabled={isBusy}
+        onClick={() => onUnfriend(friendship.id)}
+        title={`Remove ${friendPet.name} from ${myPet.name}'s friends`}
+        aria-label={`Remove ${friendPet.name} from ${myPet.name}'s friends`}
+        className="flex size-7 shrink-0 items-center justify-center rounded-lg text-muted-foreground opacity-0 transition-all hover:bg-muted hover:text-destructive focus-visible:opacity-100 group-hover:opacity-100 disabled:opacity-40"
+      >
+        <Icon name="person_remove" className="text-base" />
+      </button>
     </li>
   );
 }

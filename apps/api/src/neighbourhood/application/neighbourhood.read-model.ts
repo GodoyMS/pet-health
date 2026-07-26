@@ -69,6 +69,23 @@ export interface PetSummaryView {
   ownerName: string;
 }
 
+/**
+ * An accepted friendship, from the signed-in user's point of view.
+ *
+ * Both sides are named so the UI can always say *which* of the user's pets a
+ * friendship belongs to — with several pets, "Rex is a friend" is ambiguous
+ * without it.
+ */
+export interface PetFriendshipView {
+  id: string;
+  /** The user's own pet in this friendship. */
+  myPet: PetSummaryView;
+  /** The other owner's pet. */
+  friendPet: PetSummaryView;
+  /** When the request was accepted (falls back to creation time). */
+  since: string;
+}
+
 /** A row in the friendship inbox. */
 export interface FriendshipRequestView {
   id: string;

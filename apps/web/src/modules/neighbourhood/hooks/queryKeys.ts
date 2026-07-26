@@ -11,6 +11,5 @@ export const neighbourhoodKeys = {
   /** Every nearby query regardless of pet or radius. */
   nearbyAll: () => [...neighbourhoodKeys.all, "nearby"] as const,
   inbox: () => [...neighbourhoodKeys.all, "inbox"] as const,
-  friends: (petId: string) =>
-    [...neighbourhoodKeys.all, "friends", petId] as const
+  friends: () => [...neighbourhoodKeys.all, "friends"] as const
 };

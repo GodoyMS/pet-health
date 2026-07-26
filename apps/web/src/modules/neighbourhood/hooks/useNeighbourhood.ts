@@ -55,12 +55,16 @@ export function useFriendshipInbox() {
   });
 }
 
-export function usePetFriends(petId: string | undefined) {
+/**
+ * All accepted friendships across every pet the user owns — the same scope as
+ * the inbox, so the sidebar's three tabs always describe one set of pets.
+ * Narrowing to a single pet is a client-side filter, which keeps switching
+ * scope instant.
+ */
+export function useFriendships() {
   return useQuery({
-    queryKey: neighbourhoodKeys.friends(petId ?? "none"),
-    enabled: Boolean(petId),
-    queryFn: async () =>
-      (await petFriendshipsApi.friendsOf(petId as string)).data.friends,
+    queryKey: neighbourhoodKeys.friends(),
+    queryFn: async () => (await petFriendshipsApi.friends()).data.friends,
     staleTime: 30_000
   });
 }

@@ -60,15 +60,13 @@ export class PetFriendshipsController {
     return this.friendships.inbox(user.id);
   }
 
-  @Get("pets/:petId/friends")
-  @ApiParam({ name: "petId", format: "uuid" })
-  @ApiOperation({ summary: "Accepted friends of one of my pets" })
-  @ApiResponse({ status: 404, description: "Pet not found" })
-  async friends(
-    @CurrentUser() user: User,
-    @Param("petId", ParseUUIDPipe) petId: string
-  ) {
-    const friends = await this.friendships.friendsOf(user.id, petId);
+  @Get("friends")
+  @ApiOperation({
+    summary: "Accepted friendships across all my pets, each naming which pet"
+  })
+  @ApiResponse({ status: 200, description: "Friendships, newest first" })
+  async friends(@CurrentUser() user: User) {
+    const friends = await this.friendships.listFriendships(user.id);
     return { friends };
   }
 

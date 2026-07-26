@@ -149,7 +149,7 @@ own — so the endpoints can't be used to probe which pet ids exist.
 | `PATCH` | `/neighbourhood/pets/:petId/discoverability` | Show/hide on other maps |
 | `GET` | `/neighbourhood/pets/:petId/nearby?radius=` | Nearby pets (200 m–20 km, default 2 km) |
 | `GET` | `/pet-friendships/inbox` | **All** pending requests across **all** my pets, split incoming/outgoing |
-| `GET` | `/pet-friendships/pets/:petId/friends` | Accepted friends of one pet |
+| `GET` | `/pet-friendships/friends` | Accepted friendships across **all** my pets, each naming which pet |
 | `POST` | `/pet-friendships` | `{ requesterPetId, addresseePetId }` |
 | `PATCH` | `/pet-friendships/:id` | `{ action: accept \| reject \| cancel \| unfriend }` |
 
@@ -221,10 +221,22 @@ tap the map, or "Follow me" to re-attach to your live position.
 
 **Friendship UX** — clicking a nearby pin opens a popover whose single CTA is
 derived from the friendship row (send / withdraw / respond / friends+remove).
-The sidebar's **Requests** tab aggregates pending requests across *all* the
-user's pets, and each card shows the **requester pet → target pet** pairing so
-it's unambiguous which of your pets is involved. Below `lg` the sidebar becomes
-a sheet behind a badged button.
+Below `lg` the sidebar becomes a sheet behind a badged button.
+
+**Sidebar scope.** All three tabs (Requests / Sent / Friends) describe the
+*same* set of pets, chosen by one filter at the top: **All pets** (the default,
+because a request to any pet is time-sensitive and hiding it behind a filter is
+how you miss it) or just the active pet. Filtering is client-side over the
+aggregated payload, so switching scope is instant with no refetch.
+
+Scope is also restated on every row — each card names which of *your* pets it
+concerns ("wants to meet Milo", "friends with Luna"), so the list reads
+unambiguously even before anyone notices the filter. The filter is hidden
+entirely for single-pet owners, where it would be meaningless.
+
+This replaced an earlier version where Requests and Sent were household-wide
+but Friends was silently scoped to the active pet: the three counts didn't
+describe a consistent world, and nothing on screen said which was which.
 
 ---
 

@@ -24,7 +24,7 @@ import {
   useMyNeighbourhoodPets,
   useNearbyPets,
   useOwnerLocation,
-  usePetFriends
+  useFriendships
 } from "../hooks/useNeighbourhood";
 
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;
@@ -73,7 +73,7 @@ export function NeighbourhoodPage() {
     activePet?.location ? activePet.id : undefined,
     radius
   );
-  const { data: friends = [] } = usePetFriends(activePet?.id);
+  const { data: friends = [] } = useFriendships();
 
   // Seed the owner anchor the first time we get a fix, which also gives every
   // pet its initial position.
@@ -169,11 +169,13 @@ export function NeighbourhoodPage() {
       incoming={incoming}
       outgoing={outgoing}
       friends={friends}
-      activePetName={activePet.name}
+      activePet={activePet}
+      hasMultiplePets={pets.length > 1}
       isLoading={inboxLoading}
       isBusy={isBusy}
       onRespond={(id, action) => friendships.respond.mutate({ id, action })}
       onCancel={(id) => friendships.respond.mutate({ id, action: "cancel" })}
+      onUnfriend={(id) => friendships.respond.mutate({ id, action: "unfriend" })}
     />
   );
 

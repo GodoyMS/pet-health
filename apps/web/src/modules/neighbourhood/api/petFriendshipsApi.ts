@@ -28,11 +28,17 @@ export interface FriendshipInbox {
   outgoing: FriendshipRequestView[];
 }
 
-export interface PetFriendView {
+/**
+ * An accepted friendship. Both sides are named so the UI can always say which
+ * of the user's pets a friendship belongs to.
+ */
+export interface PetFriendshipView {
   id: string;
-  name: string;
-  species: SpeciesSummary;
-  ownerName: string;
+  /** The user's own pet in this friendship. */
+  myPet: PetSummaryView;
+  /** The other owner's pet. */
+  friendPet: PetSummaryView;
+  since: string;
 }
 
 export const petFriendshipsApi = {
@@ -40,9 +46,9 @@ export const petFriendshipsApi = {
     return httpClient.get<FriendshipInbox>("/pet-friendships/inbox");
   },
 
-  friendsOf(petId: string) {
-    return httpClient.get<{ friends: PetFriendView[] }>(
-      `/pet-friendships/pets/${petId}/friends`
+  friends() {
+    return httpClient.get<{ friends: PetFriendshipView[] }>(
+      "/pet-friendships/friends"
     );
   },
 

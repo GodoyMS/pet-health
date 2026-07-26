@@ -31,9 +31,7 @@ export function useFriendshipMutations() {
     void queryClient.invalidateQueries({ queryKey: neighbourhoodKeys.inbox() });
     void queryClient.invalidateQueries({ queryKey: neighbourhoodKeys.nearbyAll() });
     void queryClient.invalidateQueries({ queryKey: neighbourhoodKeys.myPets() });
-    void queryClient.invalidateQueries({
-      queryKey: [...neighbourhoodKeys.all, "friends"]
-    });
+    void queryClient.invalidateQueries({ queryKey: neighbourhoodKeys.friends() });
   };
 
   const sendRequest = useMutation({

@@ -19,7 +19,7 @@ import {
 import { PetFriendshipOrmEntity } from "../infrastructure/typeorm/pet-friendship.orm-entity";
 import type {
   FriendshipRequestView,
-  NearbyPet,
+  PetFriendshipView,
   PetSummaryView
 } from "./neighbourhood.read-model";
 
@@ -199,42 +199,51 @@ export class PetFriendshipService {
     return { incoming, outgoing };
   }
 
-  /** Accepted friends of one pet, as map-compatible summaries. */
-  async friendsOf(
-    userId: string,
-    petId: string
-  ): Promise<Pick<NearbyPet, "id" | "name" | "species" | "ownerName">[]> {
-    const owned = await this.pets.exists({
-      where: { id: petId, owner: { id: userId } }
-    });
-    if (!owned) throw new NotFoundException("Pet not found");
+  /**
+   * Every accepted friendship across all of the user's pets, each naming which
+   * pet of theirs it belongs to.
+   *
+   * Deliberately aggregated like {@link inbox} rather than scoped to one pet:
+   * the sidebar filters client-side, so switching scope is instant and all
+   * three of its tabs describe the same set of pets.
+   */
+  async listFriendships(userId: string): Promise<PetFriendshipView[]> {
+    const myPetIds = await this.ownedPetIds(userId);
+    if (myPetIds.length === 0) return [];
 
     const rows = await this.friendships.find({
       where: [
-        { requesterPetId: petId, status: "accepted" },
-        { addresseePetId: petId, status: "accepted" }
-      ]
+        { requesterPetId: In(myPetIds), status: "accepted" },
+        { addresseePetId: In(myPetIds), status: "accepted" }
+      ],
+      order: { respondedAt: "DESC" }
     });
     if (rows.length === 0) return [];
 
-    const friendIds = rows.map((row) =>
-      row.requesterPetId === petId ? row.addresseePetId : row.requesterPetId
+    const pets = await this.petsByIds(
+      rows.flatMap((row) => [row.requesterPetId, row.addresseePetId])
     );
-    const pets = await this.petsByIds(friendIds);
+    const mine = new Set(myPetIds);
 
-    return friendIds
-      .map((id) => pets.get(id))
-      .filter((pet): pet is PetOrmEntity => Boolean(pet))
-      .map((pet) => ({
-        id: pet.id,
-        name: pet.name,
-        species: {
-          id: pet.species.id,
-          name: pet.species.name,
-          imageUrl: pet.species.imageUrl
-        },
-        ownerName: pet.owner.name
-      }));
+    const views: PetFriendshipView[] = [];
+    for (const row of rows) {
+      const requesterIsMine = mine.has(row.requesterPetId);
+      const myPet = pets.get(
+        requesterIsMine ? row.requesterPetId : row.addresseePetId
+      );
+      const friendPet = pets.get(
+        requesterIsMine ? row.addresseePetId : row.requesterPetId
+      );
+      if (!myPet || !friendPet) continue;
+
+      views.push({
+        id: row.id,
+        myPet: toPetSummary(myPet),
+        friendPet: toPetSummary(friendPet),
+        since: (row.respondedAt ?? row.createdAt).toISOString()
+      });
+    }
+    return views;
   }
 
   /**
