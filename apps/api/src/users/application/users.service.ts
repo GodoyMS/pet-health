@@ -20,12 +20,24 @@ export class UsersService {
       entity.passwordHash,
       entity.provider,
       entity.googleId,
-      entity.role
+      entity.role,
+      entity.emailVerified
     );
   }
 
-  async create(name: string, email: string, passwordHash: string): Promise<User> {
-    const entity = this.repo.create({ name, email, passwordHash, provider: "email" });
+  async create(
+    name: string,
+    email: string,
+    passwordHash: string,
+    options?: { emailVerified?: boolean }
+  ): Promise<User> {
+    const entity = this.repo.create({
+      name,
+      email,
+      passwordHash,
+      provider: "email",
+      emailVerified: options?.emailVerified ?? true
+    });
     const saved = await this.repo.save(entity);
     return this.toDomain(saved);
   }
@@ -36,7 +48,8 @@ export class UsersService {
       email,
       passwordHash: null,
       provider: "google",
-      googleId
+      googleId,
+      emailVerified: true
     });
     const saved = await this.repo.save(entity);
     return this.toDomain(saved);
@@ -55,6 +68,26 @@ export class UsersService {
   async findByGoogleId(googleId: string): Promise<User | null> {
     const entity = await this.repo.findOne({ where: { googleId } });
     return entity ? this.toDomain(entity) : null;
+  }
+
+  async updatePassword(id: string, passwordHash: string): Promise<void> {
+    await this.repo.update({ id }, { passwordHash });
+  }
+
+  async markEmailVerified(id: string): Promise<User> {
+    await this.repo.update({ id }, { emailVerified: true });
+    const entity = await this.repo.findOneOrFail({ where: { id } });
+    return this.toDomain(entity);
+  }
+
+  async updateUnverifiedRegistration(
+    id: string,
+    name: string,
+    passwordHash: string
+  ): Promise<User> {
+    await this.repo.update({ id }, { name, passwordHash, emailVerified: false });
+    const entity = await this.repo.findOneOrFail({ where: { id } });
+    return this.toDomain(entity);
   }
 
   /**

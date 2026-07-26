@@ -1,6 +1,7 @@
 import { DataSourceOptions } from "typeorm";
 
 import { UserOrmEntity } from "../users/infrastructure/typeorm/user.orm-entity";
+import { AuthChallengeOrmEntity } from "../auth/infrastructure/typeorm/auth-challenge.orm-entity";
 import { PetOrmEntity } from "../pets/infrastructure/typeorm/pet.orm-entity";
 import { BreedOrmEntity } from "../species/infrastructure/typeorm/breed.orm-entity";
 import { SpeciesOrmEntity } from "../species/infrastructure/typeorm/species.orm-entity";
@@ -22,6 +23,7 @@ export const ormConfig: DataSourceOptions = {
   type: "postgres",
   entities: [
     UserOrmEntity,
+    AuthChallengeOrmEntity,
     SpeciesOrmEntity,
     BreedOrmEntity,
     PetOrmEntity,

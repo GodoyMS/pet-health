@@ -32,7 +32,10 @@ async function bootstrap() {
     )
     .setVersion("1.0")
     .addCookieAuth("auth_token")
-    .addTag("auth", "Registration, login, logout, and current user")
+    .addTag(
+      "auth",
+      "Registration, email MFA verification, login, password reset, logout, and current user"
+    )
     .addTag("species", "Species reference (public)")
     .addTag("pets", "Pet profiles (authenticated)")
     .addTag("admin", "Backoffice endpoints (admin role required)")

@@ -33,6 +33,13 @@ export class UserOrmEntity {
   @Column({ type: "varchar", default: "user" })
   role!: UserRole;
 
+  /**
+   * Email/password signups require MFA verification before login.
+   * Defaults to true so existing rows remain usable after the column is added.
+   */
+  @Column({ type: "boolean", default: true })
+  emailVerified!: boolean;
+
   @CreateDateColumn({ type: "timestamptz" })
   createdAt!: Date;
 

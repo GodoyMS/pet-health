@@ -10,6 +10,8 @@ export class User {
     public readonly passwordHash: string | null,
     public readonly provider: AuthProvider = "email",
     public readonly googleId: string | null = null,
-    public readonly role: UserRole = "user"
+    public readonly role: UserRole = "user",
+    /** Existing accounts default to verified; new email signups start unverified. */
+    public readonly emailVerified: boolean = true
   ) {}
 }

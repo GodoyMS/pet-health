@@ -19,7 +19,7 @@ import {
 } from "@nestjs/swagger";
 import { AuthGuard as PassportAuthGuard } from "@nestjs/passport";
 import { Response, Request } from "express";
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsString, Length, MinLength } from "class-validator";
 
 import { AuthService } from "../../application/auth.service";
 import { AuthGuard } from "./auth.guard";
@@ -38,6 +38,8 @@ class UserResponseDto {
   provider!: string;
   @ApiProperty({ example: "user", enum: ["user", "admin"] })
   role!: string;
+  @ApiProperty({ example: true })
+  emailVerified!: boolean;
 }
 
 class RegisterDto {
@@ -65,6 +67,60 @@ class LoginDto {
   password!: string;
 }
 
+class EmailDto {
+  @ApiProperty({ example: "jane@example.com" })
+  @IsEmail()
+  email!: string;
+}
+
+class VerifyCodeDto {
+  @ApiProperty({ example: "jane@example.com" })
+  @IsEmail()
+  email!: string;
+
+  @ApiProperty({ example: "123456", minLength: 6, maxLength: 6 })
+  @IsString()
+  @Length(6, 6)
+  code!: string;
+}
+
+class ResetPasswordDto {
+  @ApiProperty({ example: "jane@example.com" })
+  @IsEmail()
+  email!: string;
+
+  @ApiProperty({ example: "123456", minLength: 6, maxLength: 6 })
+  @IsString()
+  @Length(6, 6)
+  code!: string;
+
+  @ApiProperty({ example: "newSecret123", minLength: 6 })
+  @IsString()
+  @MinLength(6)
+  newPassword!: string;
+}
+
+class VerificationStartedDto {
+  @ApiProperty({ example: "jane@example.com" })
+  email!: string;
+  @ApiProperty({ example: true })
+  requiresVerification!: boolean;
+  @ApiProperty({
+    required: false,
+    description: "Only returned outside production when SES is not configured"
+  })
+  previewCode?: string;
+}
+
+class MessageResponseDto {
+  @ApiProperty({ example: true })
+  success!: boolean;
+  @ApiProperty()
+  message!: string;
+  @ApiProperty({ required: false })
+  previewCode?: string;
+}
+
 const setAuthCookie = (res: Response, token: string) => {
   const isProduction = process.env.NODE_ENV === "production";
   res.cookie("auth_token", token, {
@@ -81,7 +137,8 @@ const toUserResponse = (user: User) => ({
   name: user.name,
   email: user.email,
   provider: user.provider,
-  role: user.role
+  role: user.role,
+  emailVerified: user.emailVerified
 });
 
 @ApiTags("auth")
@@ -90,13 +147,59 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post("register")
-  @ApiOperation({ summary: "Register a new user" })
+  @ApiOperation({
+    summary: "Start email registration; sends a 6-digit MFA verification code"
+  })
   @ApiBody({ type: RegisterDto })
-  @ApiResponse({ status: 201, description: "User created", type: UserResponseDto })
+  @ApiResponse({
+    status: 201,
+    description: "Verification code sent",
+    type: VerificationStartedDto
+  })
   @ApiResponse({ status: 401, description: "Email already in use" })
   async register(@Body() body: RegisterDto) {
-    const user = await this.authService.register(body.name, body.email, body.password);
+    return this.authService.register(body.name, body.email, body.password);
+  }
+
+  @Post("verify-email")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Verify registration MFA code and sign the user in" })
+  @ApiBody({ type: VerifyCodeDto })
+  @ApiResponse({ status: 200, description: "Email verified", type: UserResponseDto })
+  async verifyEmail(
+    @Body() body: VerifyCodeDto,
+    @Res({ passthrough: true }) res: Response
+  ) {
+    const { user, token } = await this.authService.verifyEmail(body.email, body.code);
+    setAuthCookie(res, token);
     return toUserResponse(user);
+  }
+
+  @Post("resend-verification")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Resend the registration MFA verification code" })
+  @ApiBody({ type: EmailDto })
+  @ApiResponse({ status: 200, type: MessageResponseDto })
+  async resendVerification(@Body() body: EmailDto) {
+    return this.authService.resendEmailVerification(body.email);
+  }
+
+  @Post("forgot-password")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Request a password-reset MFA code by email" })
+  @ApiBody({ type: EmailDto })
+  @ApiResponse({ status: 200, type: MessageResponseDto })
+  async forgotPassword(@Body() body: EmailDto) {
+    return this.authService.forgotPassword(body.email);
+  }
+
+  @Post("reset-password")
+  @HttpCode(200)
+  @ApiOperation({ summary: "Reset password using the MFA code from email" })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiResponse({ status: 200, type: MessageResponseDto })
+  async resetPassword(@Body() body: ResetPasswordDto) {
+    return this.authService.resetPassword(body.email, body.code, body.newPassword);
   }
 
   @Post("login")
