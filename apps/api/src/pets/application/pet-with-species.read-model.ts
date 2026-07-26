@@ -11,6 +11,7 @@ export interface SpeciesSummary {
 export interface BreedSummary {
   id: string;
   name: string;
+  expectedLifespanYears: number | null;
 }
 
 export interface PetWithSpecies {
@@ -22,4 +23,6 @@ export interface PetWithSpecies {
   birthDate: string;
   weightKg: number | null;
   expectedLifeSpanYears: number | null;
+  /** Latest AI wellness awareness score (0–100), null if no report generated yet. */
+  awarenessScore: number | null;
 }

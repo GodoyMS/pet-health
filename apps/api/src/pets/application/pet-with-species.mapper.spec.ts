@@ -14,7 +14,8 @@ describe("toPetWithSpecies", () => {
     } as SpeciesOrmEntity;
     const breed = {
       id: "breed-1",
-      name: "Labrador Retriever"
+      name: "Labrador Retriever",
+      expectedLifespanYears: 11
     } as BreedOrmEntity;
     const entity = {
       id: "pet-1",
@@ -24,7 +25,8 @@ describe("toPetWithSpecies", () => {
       breed,
       birthDate: "2020-01-15",
       weightKg: 28.5,
-      expectedLifeSpanYears: 12
+      expectedLifeSpanYears: 12,
+      awarenessScore: 85
     } as PetOrmEntity;
 
     const result = toPetWithSpecies(entity);
@@ -40,11 +42,13 @@ describe("toPetWithSpecies", () => {
       },
       breed: {
         id: "breed-1",
-        name: "Labrador Retriever"
+        name: "Labrador Retriever",
+        expectedLifespanYears: 11
       },
       birthDate: "2020-01-15",
       weightKg: 28.5,
-      expectedLifeSpanYears: 12
+      expectedLifeSpanYears: 12,
+      awarenessScore: 85
     });
   });
 
@@ -55,7 +59,11 @@ describe("toPetWithSpecies", () => {
       name: "Cat",
       imageUrl: null
     } as SpeciesOrmEntity;
-    const breed = { id: "breed-2", name: "Siamese" } as BreedOrmEntity;
+    const breed = {
+      id: "breed-2",
+      name: "Siamese",
+      expectedLifespanYears: 12
+    } as BreedOrmEntity;
     const entity = {
       id: "pet-2",
       owner,
@@ -64,7 +72,8 @@ describe("toPetWithSpecies", () => {
       breed,
       birthDate: "2021-06-01",
       weightKg: null,
-      expectedLifeSpanYears: null
+      expectedLifeSpanYears: null,
+      awarenessScore: null
     } as PetOrmEntity;
 
     const result = toPetWithSpecies(entity);
@@ -72,5 +81,7 @@ describe("toPetWithSpecies", () => {
     expect(result.species.imageUrl).toBeNull();
     expect(result.weightKg).toBeNull();
     expect(result.expectedLifeSpanYears).toBeNull();
+    expect(result.awarenessScore).toBeNull();
+    expect(result.breed?.expectedLifespanYears).toBe(12);
   });
 });

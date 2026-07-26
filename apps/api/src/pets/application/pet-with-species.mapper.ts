@@ -15,12 +15,16 @@ export function toPetWithSpecies(entity: PetOrmEntity): PetWithSpecies {
       name: entity.species.name,
       imageUrl: entity.species.imageUrl
     },
-    breed: entity?.breed ? {
-      id: entity.breed?.id,
-      name: entity.breed?.name
-    } : null,
+    breed: entity?.breed
+      ? {
+          id: entity.breed.id,
+          name: entity.breed.name,
+          expectedLifespanYears: entity.breed.expectedLifespanYears
+        }
+      : null,
     birthDate: entity.birthDate,
     weightKg: entity.weightKg != null ? Number(entity.weightKg) : null,
-    expectedLifeSpanYears: entity.expectedLifeSpanYears
+    expectedLifeSpanYears: entity.expectedLifeSpanYears,
+    awarenessScore: entity.awarenessScore ?? null
   };
 }
