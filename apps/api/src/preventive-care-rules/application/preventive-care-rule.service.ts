@@ -4,9 +4,10 @@ import { plainToInstance } from "class-transformer";
 import { validateSync } from "class-validator";
 import { Repository } from "typeorm";
 
+import { SpeciesOrmEntity } from "../../species/infrastructure/typeorm/species.orm-entity";
+import { BreedOrmEntity } from "../../species/infrastructure/typeorm/breed.orm-entity";
 import { PreventiveCareRule } from "../domain/preventive-care-rule.entity";
 import { PreventiveCareRuleOrmEntity } from "../infrastructure/typeorm/preventive-care-rule.orm-entity";
-import { SpeciesOrmEntity } from "../../species/infrastructure/typeorm/species.orm-entity";
 import { CreatePreventiveCareRuleDto } from "./dto/create-preventive-care-rule.dto";
 import { UpdatePreventiveCareRuleDto } from "./dto/update-preventive-care-rule.dto";
 
@@ -32,7 +33,9 @@ export class PreventiveCareRuleService {
     @InjectRepository(PreventiveCareRuleOrmEntity)
     private readonly ruleRepo: Repository<PreventiveCareRuleOrmEntity>,
     @InjectRepository(SpeciesOrmEntity)
-    private readonly speciesRepo: Repository<SpeciesOrmEntity>
+    private readonly speciesRepo: Repository<SpeciesOrmEntity>,
+    @InjectRepository(BreedOrmEntity)
+    private readonly breedRepo: Repository<BreedOrmEntity>
   ) {}
 
   private toDomain(row: PreventiveCareRuleOrmEntity): PreventiveCareRule {
@@ -40,6 +43,7 @@ export class PreventiveCareRuleService {
       row.id,
       row.title,
       row.species.id,
+      row.breed.id,
       row.type,
       row.applicableMinAgeDays,
       row.applicableMaxAgeDays,
@@ -57,11 +61,27 @@ export class PreventiveCareRuleService {
     return species;
   }
 
+  private async requireBreed(
+    breedId: string,
+    speciesId: string
+  ): Promise<BreedOrmEntity> {
+    const breed = await this.breedRepo.findOne({
+      where: { id: breedId, species: { id: speciesId } },
+      relations: ["species"]
+    });
+    if (!breed) {
+      throw new NotFoundException("Breed not found for this species");
+    }
+    return breed;
+  }
+
   async findAll(): Promise<PreventiveCareRule[]> {
     const rows = await this.ruleRepo
       .createQueryBuilder("rule")
       .leftJoinAndSelect("rule.species", "species")
+      .leftJoinAndSelect("rule.breed", "breed")
       .orderBy("species.name", "ASC")
+      .addOrderBy("breed.name", "ASC")
       .addOrderBy("rule.title", "ASC")
       .getMany();
     return rows.map((r) => this.toDomain(r));
@@ -72,7 +92,7 @@ export class PreventiveCareRuleService {
     await this.requireSpecies(specieId);
     const rows = await this.ruleRepo.find({
       where: { species: { id: specieId } },
-      relations: ["species"],
+      relations: ["species", "breed"],
       order: { title: "ASC" }
     });
     return rows.map((r) => this.toDomain(r));
@@ -83,20 +103,22 @@ export class PreventiveCareRuleService {
       forbidNonWhitelisted: true
     });
     const species = await this.requireSpecies(dto.speciesId);
+    const breed = await this.requireBreed(dto.breedId, dto.speciesId);
     const row = this.ruleRepo.create({
       title: dto.title,
       species,
+      breed,
       type: dto.type,
       applicableMinAgeDays: dto.applicableMinAgeDays ?? null,
       applicableMaxAgeDays: dto.applicableMaxAgeDays ?? null,
       intervalDays: dto.intervalDays ?? null
     });
     const saved = await this.ruleRepo.save(row);
-    const withSpecies = await this.ruleRepo.findOneOrFail({
+    const withRelations = await this.ruleRepo.findOneOrFail({
       where: { id: saved.id },
-      relations: ["species"]
+      relations: ["species", "breed"]
     });
-    return this.toDomain(withSpecies);
+    return this.toDomain(withRelations);
   }
 
   async update(
@@ -108,7 +130,7 @@ export class PreventiveCareRuleService {
     });
     const row = await this.ruleRepo.findOne({
       where: { id },
-      relations: ["species"]
+      relations: ["species", "breed"]
     });
     if (!row) {
       throw new NotFoundException("Preventive care rule not found");
@@ -136,7 +158,7 @@ export class PreventiveCareRuleService {
     await this.ruleRepo.save(row);
     const refreshed = await this.ruleRepo.findOneOrFail({
       where: { id: row.id },
-      relations: ["species"]
+      relations: ["species", "breed"]
     });
     return this.toDomain(refreshed);
   }

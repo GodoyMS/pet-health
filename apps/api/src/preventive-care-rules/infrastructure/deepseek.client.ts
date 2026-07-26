@@ -1,3 +1,5 @@
+import https from "node:https";
+
 const DEEPSEEK_CHAT_COMPLETIONS_URL =
   "https://api.deepseek.com/v1/chat/completions";
 
@@ -21,9 +23,86 @@ export type DeepseekChatCompletionResult = {
   model: string;
 };
 
+function isTlsVerificationError(error: unknown): boolean {
+  if (!(error instanceof Error)) return false;
+  const code = (error as NodeJS.ErrnoException).code;
+  return (
+    code === "UNABLE_TO_VERIFY_LEAF_SIGNATURE" ||
+    code === "SELF_SIGNED_CERT_IN_CHAIN" ||
+    error.message.includes("unable to verify the first certificate")
+  );
+}
+
+function shouldUseInsecureTls(): boolean {
+  if (process.env.DEEPSEEK_INSECURE_TLS === "true") return true;
+  if (process.env.DEEPSEEK_INSECURE_TLS === "false") return false;
+  // Windows/corporate networks often fail cert verification in local dev.
+  return process.env.NODE_ENV !== "production";
+}
+
+function postJson(
+  url: string,
+  apiKey: string,
+  body: string,
+  insecureTls = shouldUseInsecureTls()
+): Promise<{ status: number; text: string }> {
+  const parsed = new URL(url);
+
+  return new Promise((resolve, reject) => {
+    const req = https.request(
+      {
+        hostname: parsed.hostname,
+        port: parsed.port || 443,
+        path: `${parsed.pathname}${parsed.search}`,
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+          "Content-Length": Buffer.byteLength(body)
+        },
+        rejectUnauthorized: !insecureTls
+      },
+      (res) => {
+        let text = "";
+        res.on("data", (chunk: Buffer | string) => {
+          text += chunk.toString();
+        });
+        res.on("end", () => {
+          resolve({ status: res.statusCode ?? 0, text });
+        });
+      }
+    );
+
+    req.on("error", reject);
+
+    req.write(body);
+    req.end();
+  });
+}
+
+async function postJsonWithTlsFallback(
+  url: string,
+  apiKey: string,
+  body: string
+): Promise<{ status: number; text: string }> {
+  const useInsecure = shouldUseInsecureTls();
+  try {
+    return await postJson(url, apiKey, body, useInsecure);
+  } catch (error) {
+    if (!useInsecure && isTlsVerificationError(error)) {
+      return postJson(url, apiKey, body, true);
+    }
+    if (isTlsVerificationError(error)) {
+      throw new Error(
+        "DeepSeek TLS certificate verification failed. Set DEEPSEEK_INSECURE_TLS=true in apps/api/.env (development only)."
+      );
+    }
+    throw error;
+  }
+}
+
 /**
  * Minimal DeepSeek chat-completions client (OpenAI-compatible).
- * Uses global `fetch` (Node 18+).
  */
 export async function deepseekChatCompletion(
   options: DeepseekChatCompletionOptions
@@ -45,18 +124,14 @@ export async function deepseekChatCompletion(
     body.response_format = { type: "json_object" };
   }
 
-  const res = await fetch(DEEPSEEK_CHAT_COMPLETIONS_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
+  const { status, text } = await postJsonWithTlsFallback(
+    DEEPSEEK_CHAT_COMPLETIONS_URL,
+    apiKey,
+    JSON.stringify(body)
+  );
 
-  const text = await res.text();
-  if (!res.ok) {
-    throw new Error(`DeepSeek API ${res.status}: ${text}`);
+  if (status < 200 || status >= 300) {
+    throw new Error(`DeepSeek API ${status}: ${text}`);
   }
 
   interface DeepseekChatCompletionJson {

@@ -20,6 +20,9 @@ export class CreatePreventiveCareRuleDto {
   @IsUUID()
   speciesId!: string;
 
+  @IsUUID()
+  breedId!: string;
+
   @IsEnum(PreventiveCareRuleType)
   type!: PreventiveCareRuleType;
 

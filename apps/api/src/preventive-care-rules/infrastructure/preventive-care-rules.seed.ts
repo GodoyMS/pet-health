@@ -8,8 +8,8 @@ import {
 } from "./preventive-care-rules.schema";
 
 /**
- * One row to insert/update for a species during DB seeding.
- * Mirrors create payload fields except `speciesId` (filled at seed time).
+ * One row to insert/update during DB seeding.
+ * Mirrors create payload fields except `speciesId` / `breedId` (filled at seed time).
  */
 export interface PreventiveCareRuleSeedDefinition {
   title: string;
@@ -41,7 +41,7 @@ function loadGeneratedFile(): GeneratedPreventiveCareRulesFile {
   }
 
   throw new Error(
-    `[preventive-care-rules] Missing preventive-care-rules.generated.json. Tried:\n${candidates.join("\n")}\nRun: pnpm run ai:generate-rules (requires DEEPSEEK_API_KEY), or add the file by hand.`
+    `[preventive-care-rules] Missing preventive-care-rules.generated.json. Tried:\n${candidates.join("\n")}\nRun: pnpm run ai:generate-rules (requires DEEPSEEK_API_KEY), then pnpm run seed:preventive-care-rules.`
   );
 }
 
@@ -55,21 +55,19 @@ function getGenerated(): GeneratedPreventiveCareRulesFile {
 }
 
 /**
- * Returns preventive-care rules to seed for a species from
- * {@link ./preventive-care-rules.generated.json} (maintainers regenerate via
- * `pnpm run ai:generate-rules`).
+ * Returns preventive-care rules to seed for a breed from
+ * {@link ./preventive-care-rules.generated.json} (regenerate via
+ * `pnpm run ai:generate-rules` before seeding).
  *
  * @param speciesSlug - Stable slug from species seed (e.g. `"dog"`, `"cat"`).
- * @param _speciesId - Reserved for future per-id overrides.
+ * @param breedName - Exact breed name from species/breeds seed.
  */
-export function buildPreventiveCareRulesForSpecies(
+export function buildPreventiveCareRulesForBreed(
   speciesSlug: string,
-  _speciesId: string
+  breedName: string
 ): PreventiveCareRuleSeedDefinition[] {
-  void _speciesId;
-
   const file = getGenerated();
-  const rules = file.rulesBySpeciesSlug[speciesSlug];
+  const rules = file.rulesBySpeciesAndBreed[speciesSlug]?.[breedName];
   if (!rules?.length) {
     return [];
   }
