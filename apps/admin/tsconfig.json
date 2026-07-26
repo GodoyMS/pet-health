@@ -1,0 +1,16 @@
+{
+  "extends": "@repo/typescript-config/react-app.json",
+  "compilerOptions": {
+    "moduleResolution": "bundler",
+    "baseUrl": "./src",
+    "paths": {
+      "@app/*": ["app/*"],
+      "@modules/*": ["modules/*"],
+      "@shared/*": ["shared/*"],
+      "@repo/ui": ["../../../packages/ui/src/index.ts"],
+      "@repo/ui/*": ["../../../packages/ui/src/*"]
+    },
+    "types": ["vite/client", "react", "react-dom"]
+  },
+  "include": ["src", "vite.config.ts"]
+}

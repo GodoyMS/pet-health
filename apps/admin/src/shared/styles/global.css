@@ -1,0 +1,85 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@repo/tailwind-config";
+
+@source "../../../index.html";
+@source "../../**/*.{ts,tsx,js,jsx}";
+@source "../../../../../packages/ui/src/**/*.{ts,tsx,js,jsx}";
+
+@theme inline {
+  --font-sans: "DM Sans", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/*
+ * The admin backoffice is dark-only: override the shared (light) tokens
+ * from @repo/tailwind-config with a clean dark palette. The teal primary
+ * is kept so the backoffice still reads as the same brand.
+ */
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(0.155 0.008 255);
+  --foreground: oklch(0.93 0.005 255);
+
+  --card: oklch(0.19 0.009 255);
+  --card-foreground: oklch(0.93 0.005 255);
+
+  --popover: oklch(0.2 0.01 255);
+  --popover-foreground: oklch(0.93 0.005 255);
+
+  --primary: oklch(0.78 0.13 180);
+  --primary-foreground: oklch(0.17 0.02 200);
+
+  --secondary: oklch(0.25 0.012 255);
+  --secondary-foreground: oklch(0.9 0.01 200);
+
+  --muted: oklch(0.235 0.01 255);
+  --muted-foreground: oklch(0.68 0.01 255);
+
+  --accent: oklch(0.24 0.012 255);
+  --accent-foreground: oklch(0.95 0.005 255);
+
+  --destructive: oklch(0.6 0.2 25);
+  --destructive-foreground: oklch(0.98 0 0);
+
+  --success: #34d399;
+  --success-foreground: #052e1b;
+  --warning: #fbbf24;
+  --warning-foreground: #2d2005;
+  --info: #60a5fa;
+  --info-foreground: #06213f;
+  --error: #f87171;
+  --error-foreground: #3c0d0d;
+
+  --border: oklch(0.28 0.01 255);
+  --input: oklch(0.28 0.01 255);
+  --ring: oklch(0.65 0.11 180);
+
+  --sidebar-background: oklch(0.13 0.008 255);
+  --sidebar-foreground: oklch(0.82 0.01 255);
+  --sidebar-primary: oklch(0.78 0.13 180);
+  --sidebar-primary-foreground: oklch(0.17 0.02 200);
+  --sidebar-accent: oklch(0.2 0.012 255);
+  --sidebar-accent-foreground: oklch(0.95 0.005 255);
+  --sidebar-border: oklch(0.23 0.01 255);
+  --sidebar-ring: oklch(0.65 0.11 180);
+
+  --gradient-primary: linear-gradient(135deg, oklch(0.6 0.11 185), oklch(0.55 0.1 160));
+  --gradient-card: linear-gradient(180deg, oklch(0.2 0.009 255), oklch(0.18 0.009 255));
+  --gradient-sidebar: linear-gradient(180deg, oklch(0.14 0.009 255), oklch(0.12 0.008 255));
+  --shadow-soft: 0 2px 12px -2px rgb(0 0 0 / 0.4);
+  --shadow-card: 0 1px 3px rgb(0 0 0 / 0.3), 0 4px 12px rgb(0 0 0 / 0.25);
+  --shadow-elevated: 0 8px 30px rgb(0 0 0 / 0.45);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+
+  ::selection {
+    @apply bg-primary/30;
+  }
+}
