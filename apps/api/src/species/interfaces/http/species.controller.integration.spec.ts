@@ -38,7 +38,7 @@ describe("SpeciesController (integration)", () => {
     it("returns 200 and list from service", async () => {
       const list = [
         new Species("id-1", "Dog", null, [
-          { id: "b1", name: "Labrador Retriever" }
+          { id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 }
         ]),
         new Species("id-2", "Cat", null, [])
       ];
@@ -52,7 +52,7 @@ describe("SpeciesController (integration)", () => {
         id: "id-1",
         name: "Dog",
         imageUrl: null,
-        breeds: [{ id: "b1", name: "Labrador Retriever" }]
+        breeds: [{ id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 }]
       });
     });
   });
@@ -60,7 +60,7 @@ describe("SpeciesController (integration)", () => {
   describe("GET /species/:id", () => {
     it("returns 200 and species when found", async () => {
       const species = new Species("id-1", "Dog", "https://example.com/dog.png", [
-        { id: "b1", name: "Labrador Retriever" }
+        { id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 }
       ]);
       speciesService.findById.mockResolvedValue(species);
 
@@ -70,7 +70,7 @@ describe("SpeciesController (integration)", () => {
         id: "id-1",
         name: "Dog",
         imageUrl: "https://example.com/dog.png",
-        breeds: [{ id: "b1", name: "Labrador Retriever" }]
+        breeds: [{ id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 }]
       });
     });
 

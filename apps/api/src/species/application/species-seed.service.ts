@@ -47,11 +47,15 @@ export class SpeciesSeedService {
           where: { species: { id: speciesRow.id }, name: b.name }
         });
         if (existingBreed) {
-          await this.breedRepo.update(existingBreed.id, { name: b.name });
+          await this.breedRepo.update(existingBreed.id, {
+            name: b.name,
+            expectedLifespanYears: b.expectedLifespanYears ?? null
+          });
         } else {
           await this.breedRepo.save(
             this.breedRepo.create({
               name: b.name,
+              expectedLifespanYears: b.expectedLifespanYears ?? null,
               species: speciesRow
             })
           );

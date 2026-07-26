@@ -9,6 +9,8 @@ import { SpeciesOrmEntity } from "../infrastructure/typeorm/species.orm-entity";
 export interface BreedSummary {
   id: string;
   name: string;
+  /** Typical lifespan in years (breed reference); null when unknown or generic (e.g. Mixed). */
+  expectedLifespanYears: number | null;
 }
 
 @Injectable()
@@ -23,7 +25,11 @@ export class SpeciesService {
   private mapBreedsFromEntity(entity: SpeciesOrmEntity): BreedSummary[] {
     const rows = entity.breeds ?? [];
     return [...rows]
-      .map((b) => ({ id: b.id, name: b.name }))
+      .map((b) => ({
+        id: b.id,
+        name: b.name,
+        expectedLifespanYears: b.expectedLifespanYears
+      }))
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
@@ -64,6 +70,10 @@ export class SpeciesService {
       where: { species: { id: speciesId } },
       order: { name: "ASC" }
     });
-    return list.map((b) => ({ id: b.id, name: b.name }));
+    return list.map((b) => ({
+      id: b.id,
+      name: b.name,
+      expectedLifespanYears: b.expectedLifespanYears
+    }));
   }
 }

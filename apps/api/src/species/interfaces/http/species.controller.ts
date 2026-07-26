@@ -15,6 +15,11 @@ class BreedResponseDto {
   id!: string;
   @ApiProperty()
   name!: string;
+  @ApiProperty({
+    nullable: true,
+    description: "Typical lifespan in years (breed reference); null for generic/unknown"
+  })
+  expectedLifespanYears!: number | null;
 }
 
 class SpeciesResponseDto {

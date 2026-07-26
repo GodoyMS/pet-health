@@ -1,5 +1,6 @@
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
+import { LifestyleRuleOrmEntity } from "../../../lifestyle-rules/infrastructure/typeorm/lifestyle-rule.orm-entity";
 import { PreventiveCareRuleOrmEntity } from "../../../preventive-care-rules/infrastructure/typeorm/preventive-care-rule.orm-entity";
 import { PetOrmEntity } from "../../../pets/infrastructure/typeorm/pet.orm-entity";
 import { BreedOrmEntity } from "./breed.orm-entity";
@@ -35,4 +36,7 @@ export class SpeciesOrmEntity {
     (rule) => rule.species
   )
   preventiveCareRules!: PreventiveCareRuleOrmEntity[];
+
+  @OneToMany(() => LifestyleRuleOrmEntity, (rule) => rule.species)
+  lifestyleRules!: LifestyleRuleOrmEntity[];
 }

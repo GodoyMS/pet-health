@@ -47,15 +47,15 @@ describe("SpeciesService", () => {
           id: "1",
           name: "Cat",
           imageUrl: null,
-          breeds: [{ id: "b1", name: "Siamese" }]
+          breeds: [{ id: "b1", name: "Siamese", expectedLifespanYears: 12 }]
         },
         {
           id: "2",
           name: "Dog",
           imageUrl: null,
           breeds: [
-            { id: "b3", name: "Poodle" },
-            { id: "b2", name: "Labrador Retriever" }
+            { id: "b3", name: "Poodle", expectedLifespanYears: 13 },
+            { id: "b2", name: "Labrador Retriever", expectedLifespanYears: 11 }
           ]
         }
       ] as SpeciesOrmEntity[];
@@ -72,11 +72,11 @@ describe("SpeciesService", () => {
         id: "1",
         name: "Cat",
         imageUrl: null,
-        breeds: [{ id: "b1", name: "Siamese" }]
+        breeds: [{ id: "b1", name: "Siamese", expectedLifespanYears: 12 }]
       });
       expect(result[1].breeds).toEqual([
-        { id: "b2", name: "Labrador Retriever" },
-        { id: "b3", name: "Poodle" }
+        { id: "b2", name: "Labrador Retriever", expectedLifespanYears: 11 },
+        { id: "b3", name: "Poodle", expectedLifespanYears: 13 }
       ]);
     });
   });
@@ -87,7 +87,7 @@ describe("SpeciesService", () => {
         id: "1",
         name: "Dog",
         imageUrl: "https://example.com/dog.png",
-        breeds: [{ id: "b1", name: "Poodle" }]
+        breeds: [{ id: "b1", name: "Poodle", expectedLifespanYears: 13 }]
       } as SpeciesOrmEntity;
       mockRepo.findOne.mockResolvedValue(entity);
 
@@ -101,7 +101,7 @@ describe("SpeciesService", () => {
         id: "1",
         name: "Dog",
         imageUrl: "https://example.com/dog.png",
-        breeds: [{ id: "b1", name: "Poodle" }]
+        breeds: [{ id: "b1", name: "Poodle", expectedLifespanYears: 13 }]
       });
     });
 
@@ -117,8 +117,8 @@ describe("SpeciesService", () => {
     it("returns breeds ordered by name when species exists", async () => {
       mockRepo.findOne.mockResolvedValue({ id: "s1", name: "Dog" } as SpeciesOrmEntity);
       mockBreedRepo.find.mockResolvedValue([
-        { id: "b2", name: "Poodle" },
-        { id: "b1", name: "Labrador Retriever" }
+        { id: "b2", name: "Poodle", expectedLifespanYears: 13 },
+        { id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 }
       ] as BreedOrmEntity[]);
 
       const result = await service.findBreedsBySpeciesId("s1");
@@ -128,8 +128,8 @@ describe("SpeciesService", () => {
         order: { name: "ASC" }
       });
       expect(result).toEqual([
-        { id: "b2", name: "Poodle" },
-        { id: "b1", name: "Labrador Retriever" }
+        { id: "b2", name: "Poodle", expectedLifespanYears: 13 },
+        { id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 }
       ]);
     });
 

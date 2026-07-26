@@ -6,7 +6,12 @@ import "reflect-metadata";
  * Only `reflect-metadata` stays at top level.
  */
 
-const COMMANDS = ["all", "species", "preventive-care-rules"] as const;
+const COMMANDS = [
+  "all",
+  "species",
+  "preventive-care-rules",
+  "lifestyle-rules"
+] as const;
 type SeedCommand = (typeof COMMANDS)[number];
 
 function parseCommand(arg: string | undefined): SeedCommand {
@@ -26,10 +31,44 @@ function say(message: string): void {
   console.error(`[seed] ${message}`);
 }
 
+/** Removes legacy species-scoped rows so TypeORM can enforce NOT NULL on breedId. */
+async function cleanupLegacyPreventiveCareRules(): Promise<void> {
+  const dotenv = await import("dotenv");
+  dotenv.config({});
+  const url = process.env.DATABASE_URL?.trim();
+  if (!url) {
+    return;
+  }
+  const { Client } = require("pg") as {
+    Client: new (config: { connectionString: string }) => {
+      connect(): Promise<void>;
+      query(sql: string): Promise<{ rowCount: number | null }>;
+      end(): Promise<void>;
+    };
+  };
+  const client = new Client({ connectionString: url });
+  await client.connect();
+  try {
+    const res = await client.query(
+      'DELETE FROM preventive_care_rules WHERE "breedId" IS NULL'
+    );
+    if (res.rowCount && res.rowCount > 0) {
+      say(`removed ${res.rowCount} legacy preventive care rule(s) without breedId.`);
+    }
+  } finally {
+    await client.end();
+  }
+}
+
 async function main(): Promise<void> {
   say(`args: ${process.argv.slice(2).join(" ") || "(none)"}`);
   const cmd = parseCommand(process.argv[2]);
   say(`command: ${cmd}`);
+
+  if (cmd === "all" || cmd === "preventive-care-rules") {
+    say("checking for legacy preventive care rules (pre-migration cleanup)…");
+    await cleanupLegacyPreventiveCareRules();
+  }
 
   say("loading Nest (this can take a few seconds)…");
   const { NestFactory } = await import("@nestjs/core");
@@ -46,6 +85,9 @@ async function main(): Promise<void> {
   const { PreventiveCareRulesSeedService } = await import(
     "./preventive-care-rules/application/preventive-care-rules-seed.service"
   );
+  const { LifestyleRulesSeedService } = await import(
+    "./lifestyle-rules/application/lifestyle-rules-seed.service"
+  );
 
   try {
     if (cmd === "all" || cmd === "species") {
@@ -54,9 +96,14 @@ async function main(): Promise<void> {
       say("species + breeds: finished.");
     }
     if (cmd === "all" || cmd === "preventive-care-rules") {
-      say("running preventive care rules seed…");
+      say("running preventive care rules seed (from preventive-care-rules.generated.json)…");
       await app.get(PreventiveCareRulesSeedService).seed();
       say("preventive care rules: finished.");
+    }
+    if (cmd === "all" || cmd === "lifestyle-rules") {
+      say("running lifestyle rules seed (from lifestyle-rules.generated.json)…");
+      await app.get(LifestyleRulesSeedService).seed();
+      say("lifestyle rules: finished.");
     }
     say("done.");
   } finally {
