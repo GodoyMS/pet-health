@@ -2,7 +2,6 @@ import { authApi } from "@modules/auth/api/authApi";
 import { Icon, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@repo/ui";
 import { useGetUser } from "@shared/hooks/useGetUser";
 import { useLogout } from "@shared/hooks/useLogout";
-import { useQuery } from "@tanstack/react-query";
 
 const NavUser = () => {
   const { data: user, isLoading, isError } = useGetUser();

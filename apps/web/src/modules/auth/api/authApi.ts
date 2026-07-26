@@ -16,10 +16,12 @@ export interface RegisterPayload {
 const authUserSchema = z.object({
   id: z.string(),
   name: z.string(),
-  email: z.string().email()
+  email: z.string().email(),
+  provider: z.enum(["email", "google"]).default("email")
 });
 
 export type AuthUser = z.infer<typeof authUserSchema>;
+export type AuthProvider = AuthUser["provider"];
 
 const logoutResponseSchema = z.object({
   success: z.boolean().optional()
@@ -41,6 +43,9 @@ export const authApi = {
   async logout(): Promise<z.infer<typeof logoutResponseSchema>> {
     const response = await httpClient.post("/auth/logout");
     return logoutResponseSchema.parse(response.data ?? {});
+  },
+  async deleteAccount(): Promise<z.infer<typeof logoutResponseSchema>> {
+    const response = await httpClient.delete("/auth/me");
+    return logoutResponseSchema.parse(response.data ?? {});
   }
 };
-
