@@ -3,15 +3,16 @@ import { Link, useOutletContext, useParams } from "react-router-dom";
 
 import { Icon } from "@repo/ui";
 
+import { PetSectionHeader } from "../components/PetSectionHeader";
 import type { PetOutletContext } from "./PetDetailLayout";
 import {
   computeAgeLabel,
   computeAgeYearsDecimal,
   inferLifeStageLabel
 } from "../utils/petAge";
-
-/** Demo metric until backend supports it */
-const MOCK_AWARENESS_SCORE = 82;
+import {
+  getAwarenessScoreLabel
+} from "../utils/awarenessScore";
 
 function StatCard({
   label,
@@ -77,6 +78,11 @@ export function PetOverviewPage() {
 
   return (
     <div className="flex flex-col gap-10">
+      <PetSectionHeader
+        title="Overview"
+        description={`Here's what's happening with ${pet.name}. Use the profile menu to jump between care sections.`}
+      />
+
       <section>
         <h2 className="sr-only">Overview metrics</h2>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4">
@@ -97,8 +103,16 @@ export function PetOverviewPage() {
           />
           <StatCard
             label="Awareness score"
-            value={`${MOCK_AWARENESS_SCORE}`}
-            hint="Engagement index (demo)"
+            value={
+              pet.awarenessScore != null
+                ? `${pet.awarenessScore}`
+                : "—"
+            }
+            hint={
+              pet.awarenessScore != null
+                ? getAwarenessScoreLabel(pet.awarenessScore)
+                : "Generate an AI report"
+            }
           />
         </div>
       </section>

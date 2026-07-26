@@ -45,3 +45,44 @@ export function emptyCreatePetForm(): CreatePetFormValues {
 export function parseWeightKgFromForm(weightKg: string): number {
   return Number(weightKg.trim().replace(",", "."));
 }
+
+export const editPetFormSchema = createPetFormSchema.extend({
+  expectedLifeSpanYears: z
+    .string()
+    .optional()
+    .refine((s) => {
+      if (s == null || s.trim() === "") return true;
+      const n = Number(s.trim());
+      return Number.isInteger(n) && n >= 1 && n <= 50;
+    }, "Use a whole number between 1 and 50 years")
+});
+
+export type EditPetFormValues = z.infer<typeof editPetFormSchema>;
+
+export function editPetFormValuesFromPet(pet: {
+  name: string;
+  species: { id: string };
+  breed: { id: string } | null;
+  birthDate: string;
+  weightKg: number | null;
+  expectedLifeSpanYears: number | null;
+}): EditPetFormValues {
+  return {
+    name: pet.name,
+    speciesId: pet.species.id,
+    breedId: pet.breed?.id ?? "",
+    birthDate: pet.birthDate,
+    weightKg: pet.weightKg != null ? String(pet.weightKg) : "",
+    expectedLifeSpanYears:
+      pet.expectedLifeSpanYears != null
+        ? String(pet.expectedLifeSpanYears)
+        : ""
+  };
+}
+
+export function parseExpectedLifeSpanFromForm(
+  value: string | undefined
+): number | null {
+  if (value == null || value.trim() === "") return null;
+  return Number(value.trim());
+}

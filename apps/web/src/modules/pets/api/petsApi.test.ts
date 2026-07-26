@@ -24,7 +24,7 @@ describe("petsApi", () => {
           ownerId: "u1",
           name: "Rex",
           species: { id: "s1", name: "Dog", imageUrl: null },
-          breed: { id: "b1", name: "Labrador Retriever" },
+          breed: { id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 },
           birthDate: "2020-01-01",
           weightKg: 12.5,
           expectedLifeSpanYears: 12
@@ -46,7 +46,7 @@ describe("petsApi", () => {
         ownerId: "u1",
         name: "Rex",
         species: { id: "s1", name: "Dog", imageUrl: null },
-        breed: { id: "b1", name: "Labrador Retriever" },
+        breed: { id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 },
         birthDate: "2020-01-01",
         weightKg: 12.5,
         expectedLifeSpanYears: 12
@@ -74,7 +74,7 @@ describe("petsApi", () => {
         ownerId: "u1",
         name: "Rex",
         species: { id: "s1", name: "Dog", imageUrl: null },
-        breed: { id: "b1", name: "Labrador Retriever" },
+        breed: { id: "b1", name: "Labrador Retriever", expectedLifespanYears: 11 },
         birthDate: "2020-01-01",
         weightKg: 12.5,
         expectedLifeSpanYears: null

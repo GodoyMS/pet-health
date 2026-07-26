@@ -3,6 +3,8 @@ import { httpClient } from "@shared/api/httpClient";
 export interface BreedSummary {
   id: string;
   name: string;
+  /** Typical lifespan in years (breed reference); null for Mixed / Other */
+  expectedLifespanYears: number | null;
 }
 
 export interface SpeciesSummary {

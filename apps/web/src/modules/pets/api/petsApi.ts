@@ -9,6 +9,7 @@ export interface SpeciesSummary {
 export interface BreedSummary {
   id: string;
   name: string;
+  expectedLifespanYears: number | null;
 }
 
 export interface PetDTO {
@@ -20,6 +21,7 @@ export interface PetDTO {
   birthDate: string;
   weightKg: number | null;
   expectedLifeSpanYears: number | null;
+  awarenessScore: number | null;
 }
 
 export interface CreatePetPayload {
@@ -31,6 +33,8 @@ export interface CreatePetPayload {
   expectedLifeSpanYears?: number | null;
 }
 
+export type UpdatePetPayload = CreatePetPayload;
+
 export const petsApi = {
   list() {
     return httpClient.get<PetDTO[]>("/pets");
@@ -40,6 +44,9 @@ export const petsApi = {
   },
   create(payload: CreatePetPayload) {
     return httpClient.post<PetDTO>("/pets", payload);
+  },
+  update(id: string, payload: UpdatePetPayload) {
+    return httpClient.patch<PetDTO>(`/pets/${id}`, payload);
   },
   delete(id: string) {
     return httpClient.delete<void>(`/pets/${id}`);

@@ -2,12 +2,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { isAxiosError } from "axios";
 import { toast } from "@repo/ui";
 
-import type { CreatePetPayload } from "../api/petsApi";
+import type { UpdatePetPayload } from "../api/petsApi";
 import { petsApi } from "../api/petsApi";
 
 function getMutationErrorMessage(error: unknown): string {
   if (!isAxiosError(error)) {
-    return "Could not create pet. Try again.";
+    return "Could not save changes. Try again.";
   }
   const data = error.response?.data as { message?: string | string[] } | undefined;
   if (data?.message != null) {
@@ -15,21 +15,21 @@ function getMutationErrorMessage(error: unknown): string {
       ? data.message.join(", ")
       : String(data.message);
   }
-  return error.message || "Could not create pet.";
+  return error.message || "Could not save changes.";
 }
 
-export function useCreatePet() {
+export function useUpdatePet(petId: string) {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (payload: CreatePetPayload) => {
-      const res = await petsApi.create(payload);
+    mutationFn: async (payload: UpdatePetPayload) => {
+      const res = await petsApi.update(petId, payload);
       return res.data;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       void queryClient.invalidateQueries({ queryKey: ["pets"] });
-      void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
-      toast.success("Pet created successfully");
+      void queryClient.setQueryData(["pets", petId], data);
+      toast.success("Pet profile updated");
     },
     onError: (error: unknown) => {
       toast.error(getMutationErrorMessage(error));
