@@ -11,6 +11,7 @@ import { PreventiveCareRulesModule } from "./preventive-care-rules/preventive-ca
 import { DashboardModule } from "./dashboard/dashboard.module";
 import { GoogleCalendarModule } from "./google-calendar/google-calendar.module";
 import { NearbyPlacesModule } from "./nearby-places/nearby-places.module";
+import { NeighbourhoodModule } from "./neighbourhood/neighbourhood.module";
 import { ormConfig } from "./config/ormconfig";
 
 @Module({
@@ -27,6 +28,7 @@ import { ormConfig } from "./config/ormconfig";
     DashboardModule,
     GoogleCalendarModule,
     NearbyPlacesModule,
+    NeighbourhoodModule,
     AdminModule
   ]
 })

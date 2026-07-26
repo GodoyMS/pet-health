@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Icon, Skeleton } from "@repo/ui";
 
 import type { NearbyPlace, NearbyPlaceType } from "../api/nearbyPlacesApi";
-import { LocationGate } from "../components/LocationGate";
+
 import { MapView } from "../components/MapView";
 import { PlacesList } from "../components/PlacesList";
-import { useGeolocation } from "../hooks/useGeolocation";
+import { LocationGate, useGeolocation } from "@shared/maps";
 import { useNearbyPlaces } from "../hooks/useNearbyPlaces";
 
 const API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY as string | undefined;

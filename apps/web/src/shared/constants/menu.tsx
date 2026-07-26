@@ -26,6 +26,11 @@ export const menuItems: MenuItem[] = [
       icon: <Icon name="location_on" />,
     },
     {
+      title: "Neighbourhood",
+      url: "/dashboard/neighbourhood",
+      icon: <Icon name="diversity_1" />,
+    },
+    {
       title: "Settings",
       url: "/dashboard/settings",
       icon: <Icon name="settings" />,

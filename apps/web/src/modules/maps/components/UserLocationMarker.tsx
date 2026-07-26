@@ -1,6 +1,6 @@
 import { AdvancedMarker } from "@vis.gl/react-google-maps";
 
-import type { Coords } from "../hooks/useGeolocation";
+import type { Coords } from "@shared/maps";
 
 /** A pulsing blue dot marking the user's live position. */
 export function UserLocationMarker({ position }: { position: Coords }) {

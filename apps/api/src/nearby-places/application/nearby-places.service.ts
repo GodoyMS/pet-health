@@ -5,6 +5,7 @@ import {
 } from "@nestjs/common";
 
 import { configEnvs } from "../../config/configEnvs";
+import { haversineMeters } from "../../shared/geo/haversine";
 
 const PLACES_ENDPOINT = "https://places.googleapis.com/v1/places:searchNearby";
 
@@ -256,21 +257,4 @@ export class NearbyPlacesService {
     }
     return key;
   }
-}
-
-/** Great-circle distance in metres between two lat/lng points. */
-function haversineMeters(
-  lat1: number,
-  lng1: number,
-  lat2: number,
-  lng2: number
-): number {
-  const R = 6_371_000;
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
 }

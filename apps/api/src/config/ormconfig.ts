@@ -12,6 +12,9 @@ import { PetAiReportOrmEntity } from "../pets/infrastructure/typeorm/pet-ai-repo
 import { GoogleCalendarTokenOrmEntity } from "../google-calendar/infrastructure/typeorm/google-calendar-token.orm-entity";
 import { GoogleCalendarSyncOrmEntity } from "../google-calendar/infrastructure/typeorm/google-calendar-sync.orm-entity";
 import { AuditLogOrmEntity } from "../admin/infrastructure/typeorm/audit-log.orm-entity";
+import { OwnerLocationOrmEntity } from "../neighbourhood/infrastructure/typeorm/owner-location.orm-entity";
+import { PetLocationOrmEntity } from "../neighbourhood/infrastructure/typeorm/pet-location.orm-entity";
+import { PetFriendshipOrmEntity } from "../neighbourhood/infrastructure/typeorm/pet-friendship.orm-entity";
 import { configEnvs } from "./configEnvs";
 
 export const ormConfig: DataSourceOptions = {
@@ -29,7 +32,10 @@ export const ormConfig: DataSourceOptions = {
     PetAiReportOrmEntity,
     GoogleCalendarTokenOrmEntity,
     GoogleCalendarSyncOrmEntity,
-    AuditLogOrmEntity
+    AuditLogOrmEntity,
+    OwnerLocationOrmEntity,
+    PetLocationOrmEntity,
+    PetFriendshipOrmEntity
   ],
   synchronize: true
 };

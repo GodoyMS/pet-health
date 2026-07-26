@@ -10,7 +10,9 @@ const COMMANDS = [
   "all",
   "species",
   "preventive-care-rules",
-  "lifestyle-rules"
+  "lifestyle-rules",
+  "neighbours",
+  "neighbours:clear"
 ] as const;
 type SeedCommand = (typeof COMMANDS)[number];
 
@@ -60,6 +62,34 @@ async function cleanupLegacyPreventiveCareRules(): Promise<void> {
   }
 }
 
+/**
+ * Reads --lat/--lng/--radius/--count for the demo neighbour seed. Defaults sit
+ * on central Delhi, matching the example coordinates used across the API docs.
+ */
+function parseNeighbourOptions(): {
+  lat: number;
+  lng: number;
+  radiusMeters: number;
+  count: number;
+} {
+  const flag = (name: string, fallback: number): number => {
+    const index = process.argv.indexOf(`--${name}`);
+    if (index === -1) return fallback;
+    const value = Number(process.argv[index + 1]);
+    if (Number.isNaN(value)) {
+      throw new Error(`--${name} expects a number`);
+    }
+    return value;
+  };
+
+  return {
+    lat: flag("lat", 28.6139),
+    lng: flag("lng", 77.209),
+    radiusMeters: flag("radius", 1500),
+    count: Math.max(1, Math.min(flag("count", 12), 100))
+  };
+}
+
 async function main(): Promise<void> {
   say(`args: ${process.argv.slice(2).join(" ") || "(none)"}`);
   const cmd = parseCommand(process.argv[2]);
@@ -88,6 +118,9 @@ async function main(): Promise<void> {
   const { LifestyleRulesSeedService } = await import(
     "./lifestyle-rules/application/lifestyle-rules-seed.service"
   );
+  const { NeighbourhoodSeedService } = await import(
+    "./neighbourhood/application/neighbourhood-seed.service"
+  );
 
   try {
     if (cmd === "all" || cmd === "species") {
@@ -104,6 +137,22 @@ async function main(): Promise<void> {
       say("running lifestyle rules seed (from lifestyle-rules.generated.json)…");
       await app.get(LifestyleRulesSeedService).seed();
       say("lifestyle rules: finished.");
+    }
+    // Demo neighbours are opt-in: never part of "all", since they create
+    // fake user accounts that should only ever exist in development.
+    if (cmd === "neighbours") {
+      const options = parseNeighbourOptions();
+      say(
+        `seeding ${options.count} demo neighbours within ${options.radiusMeters}m ` +
+          `of ${options.lat}, ${options.lng}…`
+      );
+      await app.get(NeighbourhoodSeedService).seed(options);
+      say("demo neighbours: finished.");
+    }
+    if (cmd === "neighbours:clear") {
+      say("removing demo neighbours…");
+      const removed = await app.get(NeighbourhoodSeedService).clear();
+      say(`demo neighbours: removed ${removed} account(s).`);
     }
     say("done.");
   } finally {

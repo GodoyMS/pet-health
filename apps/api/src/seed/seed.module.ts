@@ -9,6 +9,10 @@ import { PreventiveCareRulesSeedService } from "../preventive-care-rules/applica
 import { SpeciesSeedService } from "../species/application/species-seed.service";
 import { BreedOrmEntity } from "../species/infrastructure/typeorm/breed.orm-entity";
 import { SpeciesOrmEntity } from "../species/infrastructure/typeorm/species.orm-entity";
+import { NeighbourhoodSeedService } from "../neighbourhood/application/neighbourhood-seed.service";
+import { PetLocationOrmEntity } from "../neighbourhood/infrastructure/typeorm/pet-location.orm-entity";
+import { PetOrmEntity } from "../pets/infrastructure/typeorm/pet.orm-entity";
+import { UserOrmEntity } from "../users/infrastructure/typeorm/user.orm-entity";
 
 /**
  * Standalone context for CLI seeding (not loaded by {@link AppModule}).
@@ -20,13 +24,17 @@ import { SpeciesOrmEntity } from "../species/infrastructure/typeorm/species.orm-
       SpeciesOrmEntity,
       BreedOrmEntity,
       PreventiveCareRuleOrmEntity,
-      LifestyleRuleOrmEntity
+      LifestyleRuleOrmEntity,
+      PetOrmEntity,
+      UserOrmEntity,
+      PetLocationOrmEntity
     ])
   ],
   providers: [
     SpeciesSeedService,
     PreventiveCareRulesSeedService,
-    LifestyleRulesSeedService
+    LifestyleRulesSeedService,
+    NeighbourhoodSeedService
   ]
 })
 export class SeedModule {}

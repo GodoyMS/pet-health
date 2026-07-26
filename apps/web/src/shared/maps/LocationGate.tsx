@@ -1,18 +1,37 @@
 import { Button, Icon } from "@repo/ui";
 
-import type { GeoStatus } from "../hooks/useGeolocation";
+import type { GeoStatus } from "./useGeolocation";
 
 interface LocationGateProps {
   status: GeoStatus;
   error: string | null;
   onRequest: () => void;
+  /** Headline shown in the idle/prompting state. */
+  title?: string;
+  /** Body copy shown in the idle/prompting state. */
+  body?: string;
+  /** Label of the primary opt-in button in the idle state. */
+  actionLabel?: string;
+  /** Reassurance line under the button. */
+  privacyNote?: string;
 }
 
 /**
  * Full-panel opt-in shown until the user grants live location. Also covers the
  * denied / unavailable states with a way to retry.
+ *
+ * Copy is overridable so each map surface can explain why it needs location,
+ * while the permission mechanics stay in one place.
  */
-export function LocationGate({ status, error, onRequest }: LocationGateProps) {
+export function LocationGate({
+  status,
+  error,
+  onRequest,
+  title = "Find pet care near you",
+  body = "Allow live location to see the nearest veterinary clinics and pet stores around you on an interactive map — with ratings, hours, directions, and contact details.",
+  actionLabel = "Use my location",
+  privacyNote = "Your location is used only to search — never stored."
+}: LocationGateProps) {
   const isDenied = status === "denied";
   const isUnavailable = status === "unavailable";
   const isPrompting = status === "prompting";
@@ -38,15 +57,15 @@ export function LocationGate({ status, error, onRequest }: LocationGateProps) {
           ? "Location access is blocked"
           : isUnavailable
             ? "Location unavailable"
-            : "Find pet care near you"}
+            : title}
       </h2>
 
       <p className="mt-2 max-w-md text-sm leading-relaxed text-muted-foreground">
         {isDenied
-          ? "You've blocked location access. Enable it in your browser's site settings, then try again to see nearby vets and pet stores."
+          ? "You've blocked location access. Enable it in your browser's site settings, then try again."
           : isUnavailable
             ? error ?? "We couldn't access your location. Please try again."
-            : "Allow live location to see the nearest veterinary clinics and pet stores around you on an interactive map — with ratings, hours, directions, and contact details."}
+            : body}
       </p>
 
       {error && !isDenied && !isUnavailable && (
@@ -67,14 +86,14 @@ export function LocationGate({ status, error, onRequest }: LocationGateProps) {
         ) : (
           <>
             <Icon name="my_location" className="text-lg" />
-            {isDenied || isUnavailable ? "Try again" : "Use my location"}
+            {isDenied || isUnavailable ? "Try again" : actionLabel}
           </>
         )}
       </Button>
 
       <p className="mt-4 flex items-center gap-1.5 text-xs text-muted-foreground/70">
         <Icon name="lock" className="text-sm" />
-        Your location is used only to search — never stored.
+        {privacyNote}
       </p>
     </div>
   );

@@ -13,6 +13,8 @@ import { CalendarPage } from "@modules/calendar/pages/CalendarPage";
 
 import { MapsPage } from "@modules/maps/pages/MapsPage";
 
+import { NeighbourhoodPage } from "@modules/neighbourhood/pages/NeighbourhoodPage";
+
 import { PetsListPage } from "@modules/pets/pages/PetsListPage";
 import { PetDetailLayout } from "@modules/pets/pages/PetDetailLayout";
 import { PetOverviewPage } from "@modules/pets/pages/PetOverviewPage";
@@ -43,6 +45,7 @@ export const router = createBrowserRouter([
           { path: "settings", element: <SettingsPage /> },
           { path: "calendar", element: <CalendarPage /> },
           { path: "maps", element: <MapsPage /> },
+          { path: "neighbourhood", element: <NeighbourhoodPage /> },
           { path: "pets", element: <PetsListPage /> },
           {
             path: "pets/:petId",

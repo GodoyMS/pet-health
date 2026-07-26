@@ -10,6 +10,8 @@
     "seed:species": "tsx src/seed.cli.ts species",
     "seed:preventive-care-rules": "tsx src/seed.cli.ts preventive-care-rules",
     "seed:lifestyle-rules": "tsx src/seed.cli.ts lifestyle-rules",
+    "seed:neighbours": "tsx src/seed.cli.ts neighbours",
+    "seed:neighbours:clear": "tsx src/seed.cli.ts neighbours:clear",
     "ai:generate-rules": "tsx src/preventive-care-rules/infrastructure/generate-rules.cli.ts",
     "ai:generate-lifestyle-rules": "tsx src/lifestyle-rules/infrastructure/generate-lifestyle-rules.cli.ts",
     "bootstrap:lifestyle-rules": "tsx src/lifestyle-rules/infrastructure/bootstrap-lifestyle-rules.cli.ts",

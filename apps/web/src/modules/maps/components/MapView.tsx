@@ -10,7 +10,7 @@ import {
 import { Icon } from "@repo/ui";
 
 import type { NearbyPlace } from "../api/nearbyPlacesApi";
-import type { Coords } from "../hooks/useGeolocation";
+import { INFO_WINDOW_CSS, type Coords } from "@shared/maps";
 import { PlaceInfoCard } from "./PlaceInfoCard";
 import { PlaceMarker } from "./PlaceMarker";
 import { UserLocationMarker } from "./UserLocationMarker";
@@ -102,10 +102,3 @@ function RecenterButton({ center }: { center: Coords }) {
     </button>
   );
 }
-
-const INFO_WINDOW_CSS = `
-.gm-style .gm-style-iw-c { padding: 0 !important; border-radius: 16px !important; overflow: hidden !important; box-shadow: 0 12px 34px -8px rgba(0,0,0,0.35) !important; }
-.gm-style .gm-style-iw-d { overflow: hidden !important; padding: 0 !important; max-height: none !important; }
-.gm-style .gm-style-iw-c button.gm-ui-hover-effect { display: none !important; }
-.gm-style .gm-style-iw-tc::after { background: var(--card, #fff) !important; }
-`;
