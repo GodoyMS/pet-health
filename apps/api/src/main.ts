@@ -13,7 +13,7 @@ async function bootstrap() {
   app.use(cookieParser());
 
   app.enableCors({
-    origin: configEnvs.WEB_ORIGIN ?? "http://localhost:5173",
+    origin: configEnvs.corsOrigins,
     credentials: true
   });
 
@@ -35,6 +35,7 @@ async function bootstrap() {
     .addTag("auth", "Registration, login, logout, and current user")
     .addTag("species", "Species reference (public)")
     .addTag("pets", "Pet profiles (authenticated)")
+    .addTag("admin", "Backoffice endpoints (admin role required)")
     .build();
 
   const document = SwaggerModule.createDocument(app, swaggerConfig);

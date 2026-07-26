@@ -13,15 +13,31 @@ export class UsersService {
   ) {}
 
   private toDomain(entity: UserOrmEntity): User {
-    return new User(entity.id, entity.email, entity.name, entity.passwordHash);
+    return new User(
+      entity.id,
+      entity.email,
+      entity.name,
+      entity.passwordHash,
+      entity.provider,
+      entity.googleId,
+      entity.role
+    );
   }
 
-  async create(
-    name: string,
-    email: string,
-    passwordHash: string
-  ): Promise<User> {
-    const entity = this.repo.create({ name, email, passwordHash });
+  async create(name: string, email: string, passwordHash: string): Promise<User> {
+    const entity = this.repo.create({ name, email, passwordHash, provider: "email" });
+    const saved = await this.repo.save(entity);
+    return this.toDomain(saved);
+  }
+
+  async createOAuthUser(name: string, email: string, googleId: string): Promise<User> {
+    const entity = this.repo.create({
+      name,
+      email,
+      passwordHash: null,
+      provider: "google",
+      googleId
+    });
     const saved = await this.repo.save(entity);
     return this.toDomain(saved);
   }
@@ -35,5 +51,18 @@ export class UsersService {
     const entity = await this.repo.findOne({ where: { id } });
     return entity ? this.toDomain(entity) : null;
   }
-}
 
+  async findByGoogleId(googleId: string): Promise<User | null> {
+    const entity = await this.repo.findOne({ where: { googleId } });
+    return entity ? this.toDomain(entity) : null;
+  }
+
+  /**
+   * Permanently delete a user. All data owned by the user (pets, health logs,
+   * AI reports, preventive-care items, Google Calendar tokens and sync records)
+   * is removed automatically via `ON DELETE CASCADE` foreign keys.
+   */
+  async deleteById(id: string): Promise<void> {
+    await this.repo.delete({ id });
+  }
+}
