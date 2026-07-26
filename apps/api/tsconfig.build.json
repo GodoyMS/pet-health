@@ -1,4 +1,11 @@
 {
   "extends": "./tsconfig.json",
+  "compilerOptions": {
+    // The shared nest-app.json declares outDir "dist", which TypeScript
+    // resolves relative to THAT file (packages/typescript-config/dist).
+    // Re-declare it here so the build lands in apps/api/dist as intended.
+    "outDir": "./dist",
+    "tsBuildInfoFile": "./dist/tsconfig.build.tsbuildinfo"
+  },
   "exclude": ["node_modules", "dist", "**/*.spec.ts", "**/*.integration.spec.ts"]
 }
