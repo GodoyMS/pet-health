@@ -29,6 +29,14 @@ class Config {
    * (New)" on the key's Google Cloud project.
    */
   public GOOGLE_MAPS_API_KEY: string | undefined;
+  /** AWS region for SES (e.g. us-east-1). Required when SES_FROM_EMAIL is set. */
+  public AWS_REGION: string | undefined;
+  public AWS_ACCESS_KEY_ID: string | undefined;
+  public AWS_SECRET_ACCESS_KEY: string | undefined;
+  /** Verified SES identity used as the From address. */
+  public SES_FROM_EMAIL: string | undefined;
+  /** Optional SES configuration set name. */
+  public SES_CONFIGURATION_SET: string | undefined;
 
   constructor() {
     this.NODE_ENV = process.env.NODE_ENV;
@@ -44,10 +52,20 @@ class Config {
     this.GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL;
     this.GOOGLE_CALENDAR_CALLBACK_URL = process.env.GOOGLE_CALENDAR_CALLBACK_URL;
     this.GOOGLE_MAPS_API_KEY = process.env.GOOGLE_MAPS_API_KEY;
+    this.AWS_REGION = process.env.AWS_REGION;
+    this.AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID;
+    this.AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
+    this.SES_FROM_EMAIL = process.env.SES_FROM_EMAIL;
+    this.SES_CONFIGURATION_SET = process.env.SES_CONFIGURATION_SET;
   }
 
   get isNearbyPlacesEnabled(): boolean {
     return !!this.GOOGLE_MAPS_API_KEY;
+  }
+
+  /** SES sends when a verified From address and region are configured. */
+  get isSesEnabled(): boolean {
+    return !!(this.SES_FROM_EMAIL && this.AWS_REGION);
   }
 
   public validateConfig(): void {

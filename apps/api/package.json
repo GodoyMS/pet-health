@@ -22,6 +22,7 @@
     "test:coverage": "jest --coverage --passWithNoTests"
   },
   "dependencies": {
+    "@aws-sdk/client-sesv2": "^3.1095.0",
     "@nestjs/common": "^11.1.14",
     "@nestjs/core": "^11.1.14",
     "@nestjs/passport": "^11.0.5",
