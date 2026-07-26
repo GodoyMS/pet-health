@@ -60,6 +60,16 @@ export function buildDashboardBreadcrumbs(
 
     const tail = parts[3];
     const sectionLabel = PET_SECTION_LABELS[tail] ?? tail;
+
+    if (parts.length === 5 && tail === "ai-summary") {
+      items.push({
+        label: sectionLabel,
+        href: `/dashboard/pets/${petId}/ai-summary`
+      });
+      items.push({ label: "Report", current: true });
+      return items;
+    }
+
     items.push({ label: sectionLabel, current: true });
     return items;
   }
