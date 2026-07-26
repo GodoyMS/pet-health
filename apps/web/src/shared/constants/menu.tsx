@@ -11,13 +11,23 @@ export const menuItems: MenuItem[] = [
       icon: <Icon name="dashboard" />,
     },
     {
-      title:"Pets",
-      url:"/dashboard/pets",
+      title: "Pets",
+      url: "/dashboard/pets",
       icon: <Icon name="pets" />,
     },
     {
-      title:"Settings",
-      url:"/dashboard/settings",
+      title: "Calendar",
+      url: "/dashboard/calendar",
+      icon: <Icon name="calendar_month" />,
+    },
+    {
+      title: "Nearby Care",
+      url: "/dashboard/maps",
+      icon: <Icon name="location_on" />,
+    },
+    {
+      title: "Settings",
+      url: "/dashboard/settings",
       icon: <Icon name="settings" />,
     },
   ]
