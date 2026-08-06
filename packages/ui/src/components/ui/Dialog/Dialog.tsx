@@ -4,7 +4,11 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 import { Button } from "../Button/Button";
-import { Icon } from "..";
+// Direct path, not the "ui" barrel: the barrel re-exports this file, so going
+// through it makes Dialog and the barrel mutually dependent. Rollup then has to
+// split them across chunks with a circular dependency between the two, which it
+// warns can break module execution order.
+import { Icon } from "../Icon/Icon";
 import { cn } from "../../../lib/utils/cn";
 
 function Dialog({

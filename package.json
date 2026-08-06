@@ -13,6 +13,8 @@
     "lint": "turbo lint",
     "test": "turbo test",
     "prepare": "turbo prune --scope=web --scope=api --docker",
+    "icons:build": "node scripts/build-icon-font.mjs",
+    "icons:check": "node scripts/build-icon-font.mjs --check",
     "dev:ui": "turbo run dev --filter=@repo/ui",
     "dev:web": "turbo run dev --filter=web",
     "dev:api": "turbo run dev --filter=api",

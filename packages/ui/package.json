@@ -2,11 +2,16 @@
   "name": "@repo/ui",
   "version": "0.0.0",
   "private": true,
+  "//sideEffects": "src/index.ts is a barrel: without this, a bundler must assume every component module it re-exports might have side effects (cva() calls, createContext(), …) and keeps them all. Importing one Button dragged MultiSelect, Command/cmdk and the tooltip stack into the entry chunk. CSS is listed because it IS a side effect and must never be dropped.",
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
     ".": {
       "types": "./src/index.ts",
       "default": "./src/index.ts"
-    }
+    },
+    "./material-symbols.css": "./src/assets/material-symbols.css"
   },
   "types": "./src/index.ts",
   "main": "./src/index.ts",
@@ -53,7 +58,6 @@
     "@repo/tailwind-config": "workspace:*",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.575.0",
-    "material-symbols": "^0.40.2",
     "radix-ui": "^1.4.3",
     "react": "^19.2.0",
     "react-day-picker": "^9.14.0",

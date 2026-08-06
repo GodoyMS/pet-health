@@ -1,7 +1,10 @@
-@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap");
+/* The Google Fonts stylesheet is linked from index.html, not @import-ed here:
+   an @import inside the bundled CSS chains two round trips (fetch app CSS,
+   parse, then fetch Google's CSS) before any text can paint. */
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "@repo/tailwind-config";
+@import "@repo/ui/material-symbols.css";
 
 @source "../../../index.html";
 @source "../../**/*.{ts,tsx,js,jsx}";

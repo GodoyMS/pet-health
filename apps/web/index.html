@@ -4,10 +4,19 @@
     <meta charset="UTF-8" />
     <title>Pet Health</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Linked here rather than @import-ed from global.css: the browser can
+         open the connection while it is still parsing the HTML, instead of
+         waiting for the app stylesheet to download and parse first. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600&family=Raleway:wght@300;400;500;600&family=DM+Sans:wght@300;400;500;600&display=swap"
+    />
   </head>
   <body class="min-h-screen">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

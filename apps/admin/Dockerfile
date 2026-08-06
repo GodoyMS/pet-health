@@ -42,12 +42,23 @@ ENV VITE_API_URL=$VITE_API_URL
 RUN pnpm install --frozen-lockfile --ignore-scripts --filter admin...
 
 # @repo/ui is consumed as TypeScript source and @repo/tailwind-config as CSS,
-# so both are compiled by Vite here rather than pre-built.
+# so both are compiled by Vite here rather than pre-built. scripts/ holds the
+# shared Vite plugins that apps/admin/vite.config.ts imports.
 COPY packages/typescript-config packages/typescript-config
 COPY packages/tailwind-config packages/tailwind-config
 COPY packages/ui packages/ui
+COPY scripts scripts
 COPY apps/admin apps/admin
 RUN pnpm --filter admin build
+
+# Precompress for `gzip_static`: nginx then serves these instead of gzipping
+# each response at its default level 1. Better ratio, no per-request CPU.
+# woff2 is excluded — it is already brotli-compressed internally.
+# `gzip -c` rather than `gzip -k`: alpine ships busybox gzip, whose -k flag has
+# not always been compiled in.
+RUN find apps/admin/dist -type f \
+      \( -name '*.js' -o -name '*.css' -o -name '*.html' -o -name '*.svg' -o -name '*.json' \) \
+      -exec sh -c 'gzip -9 -c "$1" > "$1.gz"' _ {} \;
 
 # --- runtime: static files only, no Node ------------------------------------
 FROM nginx:alpine AS runtime

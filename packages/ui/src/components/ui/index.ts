@@ -142,7 +142,6 @@ export {
   SheetTitle,
   SheetDescription,
 } from "./Sheet/Sheet";
-export * as MaterialSymbols from "material-symbols";
 export {
   Dialog,
   DialogTrigger,
