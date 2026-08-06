@@ -1,92 +1,105 @@
-import { useEffect, useRef, useState } from "react";
-import { Pause, Play } from "lucide-react";
+import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
+import { Maximize2, Pause, Play, Volume2, VolumeX } from "lucide-react";
 
 import { Icon } from "@repo/ui";
 
 import { useReveal } from "../hooks/useReveal";
 
-const SCENES = [
-  {
-    src: "/landing/hero-pets.jpg",
-    alt: "Dog and cat together outdoors",
-    title: "One home for every pet story",
-    caption: "Profiles, timelines, and care notes — finally in one calm place.",
-  },
-  {
-    src: "/landing/care-moment.jpg",
-    alt: "Owner checking a dog during outdoor care",
-    title: "Daily rituals that stick",
-    caption: "Log weight, mood, and symptoms in seconds — patterns appear over weeks.",
-  },
-  {
-    src: "/landing/clinic-care.jpg",
-    alt: "Veterinarian examining a calm cat",
-    title: "Walk in prepared",
-    caption: "AI summaries turn scattered notes into clarity your vet can use.",
-  },
-  {
-    src: "/landing/neighbourhood.jpg",
-    alt: "Dogs playing in a sunny park",
-    title: "Care meets community",
-    caption: "Discover nearby pets and keep preventive care on schedule.",
-  },
-] as const;
+const PROMO_SRC = "/landing/brag.mp4";
+const PROMO_POSTER = "/landing/brag-poster.jpg";
 
-const SCENE_MS = 4200;
+function formatTime(seconds: number) {
+  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
 
 export function VideoSection() {
   const { ref, className } = useReveal<HTMLElement>();
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [index, setIndex] = useState(0);
+  const [started, setStarted] = useState(false);
+  const [muted, setMuted] = useState(false);
   const [progress, setProgress] = useState(0);
-  const progressRef = useRef(0);
-  const raf = useRef<number | null>(null);
+  const [duration, setDuration] = useState(0);
+  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    progressRef.current = progress;
-  }, [progress]);
+    const video = videoRef.current;
+    if (!video) return;
 
-  useEffect(() => {
-    if (!playing) {
-      if (raf.current) cancelAnimationFrame(raf.current);
-      raf.current = null;
-      return;
-    }
-
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setProgress(1);
-      progressRef.current = 1;
-      return;
-    }
-
-    let start = performance.now() - progressRef.current * SCENE_MS;
-    let cancelled = false;
-
-    const tick = (now: number) => {
-      if (cancelled) return;
-      const p = Math.min(1, (now - start) / SCENE_MS);
-      progressRef.current = p;
-      setProgress(p);
-
-      if (p >= 1) {
-        setIndex((i) => (i + 1) % SCENES.length);
-        start = now;
-        progressRef.current = 0;
-        setProgress(0);
-      }
-      raf.current = requestAnimationFrame(tick);
+    const onTime = () => {
+      setCurrent(video.currentTime);
+      setProgress(video.duration ? (video.currentTime / video.duration) * 100 : 0);
+    };
+    const onMeta = () => setDuration(video.duration || 0);
+    const onPlay = () => {
+      setPlaying(true);
+      setStarted(true);
+    };
+    const onPause = () => setPlaying(false);
+    const onEnded = () => {
+      setPlaying(false);
+      setProgress(100);
     };
 
-    raf.current = requestAnimationFrame(tick);
+    video.addEventListener("timeupdate", onTime);
+    video.addEventListener("loadedmetadata", onMeta);
+    video.addEventListener("play", onPlay);
+    video.addEventListener("pause", onPause);
+    video.addEventListener("ended", onEnded);
     return () => {
-      cancelled = true;
-      if (raf.current) cancelAnimationFrame(raf.current);
-      raf.current = null;
+      video.removeEventListener("timeupdate", onTime);
+      video.removeEventListener("loadedmetadata", onMeta);
+      video.removeEventListener("play", onPlay);
+      video.removeEventListener("pause", onPause);
+      video.removeEventListener("ended", onEnded);
     };
-  }, [playing]);
+  }, []);
 
-  const scene = SCENES[index]!;
-  const overall = ((index + progress) / SCENES.length) * 100;
+  const play = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    void video.play().catch(() => {
+      /* autoplay policies — user can retry via controls */
+    });
+  };
+
+  const togglePlay = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) play();
+    else video.pause();
+  };
+
+  const toggleMute = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.muted = !video.muted;
+    setMuted(video.muted);
+  };
+
+  const seek = (ratio: number) => {
+    const video = videoRef.current;
+    if (!video || !video.duration) return;
+    video.currentTime = Math.min(1, Math.max(0, ratio)) * video.duration;
+  };
+
+  const onSeekBar = (e: MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const ratio = (e.clientX - rect.left) / rect.width;
+    seek(ratio);
+  };
+
+  const enterFullscreen = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.requestFullscreen) void video.requestFullscreen();
+    else if ("webkitEnterFullscreen" in video) {
+      (video as HTMLVideoElement & { webkitEnterFullscreen: () => void }).webkitEnterFullscreen();
+    }
+  };
 
   return (
     <section
@@ -104,78 +117,116 @@ export function VideoSection() {
             id="demo-title"
             className="font-display mt-3 text-3xl font-bold tracking-tight text-[var(--landing-ink)] sm:text-4xl"
           >
-            See the rhythm of healthier pet care
+            See Pet Health in action
           </h2>
           <p className="mt-4 text-base leading-relaxed text-[var(--landing-muted)] sm:text-lg">
-            A short look at how Pet Health turns everyday moments into a wellness story you can trust.
+            A short product film — from first log to AI clarity — so you know exactly what you&apos;re signing up for.
           </p>
         </div>
 
-        <div className="landing-video-shell mx-auto mt-12 max-w-4xl">
-          <div
-            className="relative aspect-video overflow-hidden bg-black"
-            role="region"
-            aria-label="Pet Health promotional reel"
-          >
-            {SCENES.map((s, i) => (
-              <img
-                key={s.src}
-                src={s.src}
-                alt={s.alt}
-                width={1600}
-                height={900}
-                className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-500 ${
-                  i === index ? "opacity-100" : "opacity-0"
-                } ${playing && i === index ? "landing-kenburns" : ""}`}
-                loading={i === 0 ? "eager" : "lazy"}
-                decoding="async"
-              />
-            ))}
+        <div className="landing-video-shell landing-video-promo mx-auto mt-12 max-w-4xl">
+          <div className="landing-video-chrome" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+            <p>Pet Health — Product tour</p>
+          </div>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-black/10" />
+          <div className="relative aspect-video overflow-hidden bg-black">
+            <video
+              ref={videoRef}
+              className="h-full w-full cursor-pointer object-contain bg-black"
+              poster={PROMO_POSTER}
+              playsInline
+              preload="metadata"
+              controls={false}
+              aria-label="Pet Health promotional product video"
+              onClick={togglePlay}
+            >
+              <source src={PROMO_SRC} type="video/mp4" />
+              Your browser does not support embedded video.
+            </video>
 
-            <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8">
-              <p className="font-display text-xl font-semibold text-white sm:text-2xl">
-                {scene.title}
-              </p>
-              <p className="mt-1 max-w-xl text-sm text-white/85 sm:text-base">{scene.caption}</p>
-
-              <div className="mt-5 flex items-center gap-3">
-                <button
-                  type="button"
-                  className="inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-full bg-white text-[var(--landing-teal-deep)] shadow-lg transition-transform duration-200 hover:scale-105"
-                  aria-label={playing ? "Pause promotional reel" : "Play promotional reel"}
-                  onClick={() => setPlaying((v) => !v)}
-                >
-                  {playing ? (
-                    <Pause className="h-5 w-5 fill-current" aria-hidden />
-                  ) : (
-                    <Play className="ml-0.5 h-5 w-5 fill-current" aria-hidden />
-                  )}
-                </button>
-                <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/25" aria-hidden="true">
-                  <div
-                    className="h-full rounded-full bg-white transition-[width] duration-100 ease-linear"
-                    style={{ width: `${overall}%` }}
-                  />
-                </div>
-                <span className="text-xs tabular-nums text-white/80">
-                  {index + 1}/{SCENES.length}
-                </span>
-              </div>
-            </div>
-
-            {!playing ? (
+            {!started ? (
               <button
                 type="button"
                 className="landing-play cursor-pointer"
-                onClick={() => setPlaying(true)}
+                onClick={togglePlay}
                 aria-label="Play promotional video"
               >
                 <span className="landing-play__btn">
                   <Play className="ml-1 h-7 w-7 fill-current" aria-hidden />
                 </span>
+                <span className="landing-play__label">
+                  Watch the product film
+                  <span className="opacity-80"> · ~20s</span>
+                </span>
               </button>
+            ) : null}
+
+            {started ? (
+              <div className="landing-video-controls">
+                <button
+                  type="button"
+                  className="landing-video-controls__btn cursor-pointer"
+                  aria-label={playing ? "Pause video" : "Play video"}
+                  onClick={togglePlay}
+                >
+                  {playing ? (
+                    <Pause className="h-4 w-4 fill-current" aria-hidden />
+                  ) : (
+                    <Play className="ml-0.5 h-4 w-4 fill-current" aria-hidden />
+                  )}
+                </button>
+
+                <div
+                  className="landing-video-controls__seek cursor-pointer"
+                  role="slider"
+                  aria-label="Seek video"
+                  aria-valuemin={0}
+                  aria-valuemax={100}
+                  aria-valuenow={Math.round(progress)}
+                  tabIndex={0}
+                  onClick={onSeekBar}
+                  onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
+                    if (e.key === "ArrowRight") seek((current + 2) / (duration || 1));
+                    if (e.key === "ArrowLeft") seek((current - 2) / (duration || 1));
+                  }}
+                >
+                  <div className="landing-video-controls__track">
+                    <div
+                      className="landing-video-controls__fill"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+
+                <span className="landing-video-controls__time tabular-nums">
+                  {formatTime(current)} / {formatTime(duration)}
+                </span>
+
+                <button
+                  type="button"
+                  className="landing-video-controls__btn cursor-pointer"
+                  aria-label={muted ? "Unmute video" : "Mute video"}
+                  onClick={toggleMute}
+                >
+                  {muted ? (
+                    <VolumeX className="h-4 w-4" aria-hidden />
+                  ) : (
+                    <Volume2 className="h-4 w-4" aria-hidden />
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  className="landing-video-controls__btn cursor-pointer"
+                  aria-label="Enter fullscreen"
+                  onClick={enterFullscreen}
+                >
+                  <Maximize2 className="h-4 w-4" aria-hidden />
+                </button>
+              </div>
             ) : null}
           </div>
         </div>

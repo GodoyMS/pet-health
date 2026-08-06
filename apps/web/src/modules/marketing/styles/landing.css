@@ -205,11 +205,47 @@
   box-shadow: 0 24px 60px oklch(0.3 0.04 175 / 0.22);
 }
 
+.landing-video-promo {
+  border: 1px solid oklch(0.35 0.03 175 / 0.55);
+  box-shadow:
+    0 28px 70px oklch(0.28 0.04 175 / 0.28),
+    0 0 0 1px oklch(1 0 0 / 0.04) inset;
+}
+
+.landing-video-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1rem;
+  background: linear-gradient(180deg, oklch(0.26 0.03 175), oklch(0.2 0.03 175));
+  border-bottom: 1px solid oklch(1 0 0 / 0.06);
+}
+
+.landing-video-chrome span {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 9999px;
+  background: oklch(0.7 0.02 175 / 0.45);
+}
+
+.landing-video-chrome span:nth-child(1) { background: #ff5f57; }
+.landing-video-chrome span:nth-child(2) { background: #febc2e; }
+.landing-video-chrome span:nth-child(3) { background: #28c840; }
+
+.landing-video-chrome p {
+  margin-left: 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: oklch(0.88 0.02 165 / 0.75);
+}
+
 .landing-video-shell video {
   display: block;
   width: 100%;
+  height: 100%;
   aspect-ratio: 16 / 9;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .landing-play {
@@ -217,12 +253,18 @@
   inset: 0;
   display: grid;
   place-items: center;
-  background: linear-gradient(180deg, oklch(0.2 0.03 175 / 0.15), oklch(0.18 0.04 175 / 0.45));
+  place-content: center;
+  gap: 1rem;
+  background: linear-gradient(180deg, oklch(0.2 0.03 175 / 0.2), oklch(0.18 0.04 175 / 0.52));
   transition: background 200ms ease;
 }
 
-.landing-play:hover {
+.landing-play--resume {
   background: linear-gradient(180deg, oklch(0.2 0.03 175 / 0.08), oklch(0.18 0.04 175 / 0.35));
+}
+
+.landing-play:hover {
+  background: linear-gradient(180deg, oklch(0.2 0.03 175 / 0.12), oklch(0.18 0.04 175 / 0.4));
 }
 
 .landing-play__btn {
@@ -239,6 +281,75 @@
 
 .landing-play:hover .landing-play__btn {
   transform: scale(1.06);
+}
+
+.landing-play__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.9rem;
+  border-radius: 9999px;
+  background: oklch(0.15 0.03 175 / 0.55);
+  border: 1px solid oklch(1 0 0 / 0.14);
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 500;
+  backdrop-filter: blur(8px);
+}
+
+.landing-video-controls {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.85rem 1rem 1rem;
+  background: linear-gradient(180deg, transparent, oklch(0.12 0.03 175 / 0.82));
+}
+
+.landing-video-controls__btn {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  background: oklch(1 0 0 / 0.14);
+  color: white;
+  transition: background 160ms ease, transform 160ms ease;
+}
+
+.landing-video-controls__btn:hover {
+  background: oklch(1 0 0 / 0.24);
+  transform: scale(1.04);
+}
+
+.landing-video-controls__seek {
+  flex: 1;
+  min-width: 0;
+  padding: 0.55rem 0;
+}
+
+.landing-video-controls__track {
+  height: 0.28rem;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: oklch(1 0 0 / 0.22);
+}
+
+.landing-video-controls__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--landing-coral), oklch(0.72 0.14 70));
+}
+
+.landing-video-controls__time {
+  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: oklch(1 0 0 / 0.82);
+  min-width: 4.6rem;
+  text-align: right;
 }
 
 .landing-step-line {
@@ -269,17 +380,8 @@
   50% { transform: translateY(-8px); }
 }
 
-@keyframes landing-kenburns {
-  from { transform: scale(1); }
-  to { transform: scale(1.08); }
-}
-
 .landing-float {
   animation: landing-float 5.5s ease-in-out infinite;
-}
-
-.landing-kenburns {
-  animation: landing-kenburns 4.2s ease-out forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -292,9 +394,9 @@
 
   .landing-marquee__track,
   .landing-float,
-  .landing-kenburns,
   .landing-cta-primary,
-  .landing-play__btn {
+  .landing-play__btn,
+  .landing-video-controls__btn {
     animation: none !important;
     transition: none !important;
     transform: none !important;
