@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Button,
+  DatePicker,
   FieldGroup,
   FormControl,
   FormField,
@@ -29,11 +30,18 @@ import {
   parseWeightKgFromForm,
   type CreatePetFormValues
 } from "../../schemas/createPetForm.schema";
+import { SpeciesSelectOption } from "../SpeciesSelectOption";
 
 export type CreatePetFormProps = {
   onSuccess?: () => void;
   onCancel?: () => void;
 };
+
+function isFutureDate(date: Date) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return date.getTime() > today.getTime();
+}
 
 export function CreatePetForm({ onSuccess, onCancel }: CreatePetFormProps) {
   const { data: speciesList, isLoading: speciesLoading, isError: speciesError } =
@@ -54,14 +62,6 @@ export function CreatePetForm({ onSuccess, onCancel }: CreatePetFormProps) {
   );
 
   const breeds = selectedSpecies?.breeds ?? [];
-
-  const todayIso = useMemo(() => {
-    const d = new Date();
-    const y = d.getFullYear();
-    const m = String(d.getMonth() + 1).padStart(2, "0");
-    const day = String(d.getDate()).padStart(2, "0");
-    return `${y}-${m}-${day}`;
-  }, []);
 
   const onSubmit = form.handleSubmit((values) => {
     const species = speciesList?.find((s) => s.id === values.speciesId);
@@ -157,14 +157,15 @@ export function CreatePetForm({ onSuccess, onCancel }: CreatePetFormProps) {
                     <FormControl>
                       <SelectTrigger
                         aria-invalid={!!form.formState.errors.speciesId}
+                        className="[&>span]:flex [&>span]:items-center [&>span]:line-clamp-none"
                       >
                         <SelectValue placeholder="Select species" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       {(speciesList ?? []).map((s: SpeciesSummary) => (
-                        <SelectItem key={s.id} value={s.id}>
-                          {s.name}
+                        <SelectItem key={s.id} value={s.id} className="py-2">
+                          <SpeciesSelectOption species={s} />
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -234,7 +235,11 @@ export function CreatePetForm({ onSuccess, onCancel }: CreatePetFormProps) {
               <FormItem>
                 <FormLabel>Birth date</FormLabel>
                 <FormControl>
-                  <Input type="date" max={todayIso} disabled={createPet.isPending} />
+                  <DatePicker
+                    placeholder="Select birth date"
+                    disabled={createPet.isPending}
+                    disabledDate={isFutureDate}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

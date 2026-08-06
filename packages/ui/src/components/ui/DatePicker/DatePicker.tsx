@@ -151,6 +151,10 @@ export type DatePickerProps = {
   placeholder?: string;
   className?: string;
   align?: "start" | "center" | "end";
+  /** Disables the trigger button. */
+  disabled?: boolean;
+  /** Dates for which selection is blocked (e.g. future birth dates). */
+  disabledDate?: (date: Date) => boolean;
 };
 
 export function DatePicker({
@@ -158,7 +162,9 @@ export function DatePicker({
   onChange,
   placeholder = "Pick a date",
   className,
-  align = "start"
+  align = "start",
+  disabled = false,
+  disabledDate
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
   const selected = value ? parseIsoDate(value) : undefined;
@@ -173,11 +179,12 @@ export function DatePicker({
     : undefined;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={(next) => !disabled && setOpen(next)}>
       <PopoverTrigger asChild>
         <Button
           type="button"
           variant="outline"
+          disabled={disabled}
           className={cn(
             "h-10 w-full justify-start gap-2 px-3 font-normal",
             !label && "text-muted-foreground",
@@ -192,6 +199,7 @@ export function DatePicker({
         <Calendar
           mode="single"
           selected={selected}
+          disabled={disabledDate}
           onSelect={(next) => {
             if (next instanceof Date) {
               onChange?.(toIsoDate(next));
