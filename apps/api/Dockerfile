@@ -7,16 +7,19 @@
 # directory at the repo root (see railway.json).
 
 FROM node:22-alpine AS base
-ENV PNPM_HOME=/pnpm
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
+# Installed with npm rather than corepack: `corepack prepare` fails on some
+# bundled corepack versions with "Cannot find matching keyid".
+RUN npm install --global pnpm@9.15.0
 WORKDIR /app
 
 # --- manifests only, so dependency layers cache across source changes --------
 # Every workspace manifest must be present: --frozen-lockfile validates the
 # lockfile against the whole workspace, not just the filtered package.
 FROM base AS manifests
-COPY pnpm-lock.yaml pnpm-workspace.yaml package.json .npmrc ./
+# The root .npmrc is deliberately NOT copied: it sets
+# `node-options=--use-system-ca`, a local corporate-CA workaround that breaks
+# Node in this image (no system CA store on Alpine).
+COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/api/package.json apps/api/
 COPY apps/web/package.json apps/web/
 COPY apps/admin/package.json apps/admin/
