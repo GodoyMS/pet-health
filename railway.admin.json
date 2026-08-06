@@ -2,21 +2,21 @@
   "$schema": "https://railway.app/railway.schema.json",
   "build": {
     "builder": "DOCKERFILE",
-    "dockerfilePath": "apps/api/Dockerfile",
+    "dockerfilePath": "apps/admin/Dockerfile",
     "watchPatterns": [
-      "apps/api/**",
+      "apps/admin/**",
+      "packages/ui/**",
+      "packages/tailwind-config/**",
       "packages/typescript-config/**",
       "pnpm-lock.yaml",
       "pnpm-workspace.yaml",
       "package.json",
-      "railway.json"
+      "railway.admin.json"
     ]
   },
   "deploy": {
-    "startCommand": "node dist/main.js",
-    "preDeployCommand": ["node dist/config/migrate.cli.js"],
-    "healthcheckPath": "/health",
-    "healthcheckTimeout": 120,
+    "healthcheckPath": "/",
+    "healthcheckTimeout": 60,
     "restartPolicyType": "ON_FAILURE",
     "restartPolicyMaxRetries": 5
   }
