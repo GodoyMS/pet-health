@@ -11,9 +11,9 @@ const SEVERITY_STYLES = {
 } as const;
 
 const ALERT_ICONS = {
-  overdue_preventive: "warning",
-  missing_logs: "assignment_late",
-  upcoming_due: "event"
+  overdue_preventive: { icon: "warning" },
+  missing_logs: { icon: "assignment_late" },
+  upcoming_due: { icon: "event" }
 } as const;
 
 export function DashboardAlerts({ alerts }: { alerts: DashboardAlert[] }) {
@@ -40,7 +40,7 @@ export function DashboardAlerts({ alerts }: { alerts: DashboardAlert[] }) {
             className={`flex items-start gap-3 rounded-xl border p-3.5 transition hover:shadow-sm ${SEVERITY_STYLES[alert.severity]}`}
           >
             <Icon
-              name={ALERT_ICONS[alert.type]}
+              name={ALERT_ICONS[alert.type].icon}
               className="mt-0.5 size-4 shrink-0 text-muted-foreground"
               aria-hidden
             />
