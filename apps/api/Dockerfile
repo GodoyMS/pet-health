@@ -42,6 +42,7 @@ FROM manifests AS runtime
 ENV NODE_ENV=production
 RUN pnpm install --frozen-lockfile --ignore-scripts --prod --filter api...
 COPY --from=build /app/apps/api/dist apps/api/dist
+COPY apps/api/public apps/api/public
 
 WORKDIR /app/apps/api
 EXPOSE 5000

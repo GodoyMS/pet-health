@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-labelledby="t">
+<title id="t">Fish</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#E6F8FB"/>
+<stop offset="1" stop-color="#C2EEF6"/>
+</linearGradient>
+</defs>
+<circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+<circle cx="150" cy="70" r="6" fill="#fff" opacity="0.7"/>
+<circle cx="164" cy="88" r="4" fill="#fff" opacity="0.7"/>
+<path d="M150 100 L182 78 L182 122 Z" fill="#FF6F43"/>
+<ellipse cx="98" cy="104" rx="50" ry="36" fill="#FF8A65"/>
+<path d="M84 74 Q100 52 122 70 Q104 78 84 74 Z" fill="#FF6F43"/>
+<path d="M86 134 Q100 154 118 138 Q102 130 86 134 Z" fill="#FF6F43"/>
+<path d="M118 90 Q132 104 118 118" stroke="#E8613C" stroke-width="3" fill="none" stroke-linecap="round" opacity="0.7"/>
+<circle cx="68" cy="96" r="11" fill="#fff"/>
+<circle cx="65" cy="96" r="6" fill="#22303A"/>
+<circle cx="63" cy="93" r="2" fill="#fff"/>
+</svg>

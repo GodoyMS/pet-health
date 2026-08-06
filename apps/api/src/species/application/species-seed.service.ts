@@ -5,6 +5,12 @@ import { Repository } from "typeorm";
 import { BreedOrmEntity } from "../infrastructure/typeorm/breed.orm-entity";
 import { SpeciesOrmEntity } from "../infrastructure/typeorm/species.orm-entity";
 import { SPECIES_SEED_DATA } from "species/infrastructure/species.seed";
+import { configEnvs } from "config/configEnvs";
+
+/** Resolves a seed image filename to the absolute URL clients fetch it from. */
+function resolveImageUrl(imageFileName: string): string {
+  return `${configEnvs.staticAssetsBaseUrl}/species/${imageFileName}`;
+}
 
 @Injectable()
 export class SpeciesSeedService {
@@ -36,7 +42,7 @@ export class SpeciesSeedService {
       name: s.name,
       slug: s.slug,
       description: s.description,
-      imageUrl: s.imageUrl,
+      imageUrl: resolveImageUrl(s.imageFileName),
       order: s.order
     }));
 
@@ -49,16 +55,17 @@ export class SpeciesSeedService {
       if (!existing) {
         continue;
       }
+      const imageUrl = resolveImageUrl(s.imageFileName);
       const changed =
         existing.slug !== s.slug ||
         existing.description !== s.description ||
-        existing.imageUrl !== s.imageUrl ||
+        existing.imageUrl !== imageUrl ||
         existing.order !== s.order;
       if (changed) {
         await this.speciesRepo.update(existing.id, {
           slug: s.slug,
           description: s.description,
-          imageUrl: s.imageUrl,
+          imageUrl,
           order: s.order
         });
       }

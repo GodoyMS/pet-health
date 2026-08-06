@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-labelledby="t">
+<title id="t">Rabbit</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#EDFBF2"/>
+<stop offset="1" stop-color="#CFF0DC"/>
+</linearGradient>
+</defs>
+<circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+<rect x="62" y="18" width="24" height="70" rx="12" fill="#C9CDD3" transform="rotate(-10 74 53)"/>
+<rect x="114" y="18" width="24" height="70" rx="12" fill="#C9CDD3" transform="rotate(10 126 53)"/>
+<rect x="68" y="28" width="12" height="50" rx="6" fill="#F7C9D9" transform="rotate(-10 74 53)"/>
+<rect x="120" y="28" width="12" height="50" rx="6" fill="#F7C9D9" transform="rotate(10 126 53)"/>
+<circle cx="100" cy="124" r="48" fill="#DADEE2"/>
+<ellipse cx="100" cy="146" rx="30" ry="22" fill="#FFFFFF"/>
+<g stroke="#B9BDC3" stroke-width="2" stroke-linecap="round" opacity="0.8">
+<line x1="44" y1="140" x2="72" y2="136"/>
+<line x1="44" y1="150" x2="72" y2="148"/>
+<line x1="156" y1="140" x2="128" y2="136"/>
+<line x1="156" y1="150" x2="128" y2="148"/>
+</g>
+<ellipse cx="78" cy="118" rx="7" ry="8" fill="#3B2A1E"/>
+<ellipse cx="122" cy="118" rx="7" ry="8" fill="#3B2A1E"/>
+<circle cx="80" cy="115" r="2" fill="#fff"/>
+<circle cx="124" cy="115" r="2" fill="#fff"/>
+<path d="M100 130 L94 140 L106 140 Z" fill="#F2A0B8"/>
+<rect x="93" y="148" width="6" height="10" rx="2" fill="#fff"/>
+<rect x="101" y="148" width="6" height="10" rx="2" fill="#fff"/>
+</svg>

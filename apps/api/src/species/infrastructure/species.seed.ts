@@ -11,7 +11,8 @@ export interface SpeciesSeed {
   name: string;
   slug: string;
   description: string;
-  imageUrl: string;
+  /** Filename under apps/api/public/species — resolved to an absolute URL by SpeciesSeedService. */
+  imageFileName: string;
   order: number;
   breeds: BreedSeed[];
 }
@@ -22,8 +23,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "dog",
     description:
       "Loyal, intelligent, and friendly companions known for their adaptability.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1552053831-71594a27632d?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "dog.svg",
     order: 1,
     breeds: [
       { name: "Golden Retriever", expectedLifespanYears: 12 },
@@ -55,8 +55,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "cat",
     description:
       "Independent and affectionate pets with playful and curious personalities.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "cat.svg",
     order: 2,
     breeds: [
       { name: "Persian", expectedLifespanYears: 14 },
@@ -80,8 +79,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "bird",
     description:
       "Social and intelligent animals that can be lively and engaging companions.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1501706362039-c6e80948bbf0?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "bird.svg",
     order: 3,
     breeds: [
       { name: "Budgerigar", expectedLifespanYears: 8 },
@@ -101,8 +99,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "rabbit",
     description:
       "Gentle and social pets that thrive in calm and nurturing environments.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1585110396000-c9ffd4e4b308?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "rabbit.svg",
     order: 4,
     breeds: [
       { name: "Holland Lop", expectedLifespanYears: 10 },
@@ -120,8 +117,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "fish",
     description:
       "Low-maintenance pets that bring color and tranquility to any space.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "fish.svg",
     order: 5,
     breeds: [
       { name: "Betta", expectedLifespanYears: 4 },
@@ -140,8 +136,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "hamster",
     description:
       "Small, friendly rodents ideal for compact living spaces.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1598133894008-61f7fdb8cc3a?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "hamster.svg",
     order: 6,
     breeds: [
       { name: "Syrian", expectedLifespanYears: 3 },
@@ -158,8 +153,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "turtle",
     description:
       "Calm and long-living reptiles that make unique and fascinating pets.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1502786129293-79981df4e689?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "turtle.svg",
     order: 7,
     breeds: [
       { name: "Red-eared Slider", expectedLifespanYears: 25 },
@@ -176,8 +170,7 @@ export const SPECIES_SEED_DATA: SpeciesSeed[] = [
     slug: "guinea-pig",
     description:
       "Social and vocal companions that enjoy interaction and companionship.",
-    imageUrl:
-      "https://images.unsplash.com/photo-1583512603869-9f5c6e9a78f5?auto=format&fit=crop&w=80&q=80",
+    imageFileName: "guinea-pig.svg",
     order: 8,
     breeds: [
       { name: "American", expectedLifespanYears: 7 },

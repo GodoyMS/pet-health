@@ -65,6 +65,14 @@ class Config {
    * keeps SameSite's CSRF protection.
    */
   public COOKIE_SAMESITE: string | undefined;
+  /**
+   * Public base URL of this API (no trailing slash), used to build absolute
+   * URLs for statically-served assets (e.g. species reference images) so
+   * they resolve correctly for clients regardless of environment. Defaults
+   * to http://localhost:<PORT> locally; set to the deployed API URL (e.g.
+   * the Railway public domain) in production.
+   */
+  public API_PUBLIC_URL: string | undefined;
 
   constructor() {
     this.NODE_ENV = process.env.NODE_ENV;
@@ -90,6 +98,7 @@ class Config {
     this.DB_MIGRATIONS_RUN = process.env.DB_MIGRATIONS_RUN;
     this.SEED_ON_BOOT = process.env.SEED_ON_BOOT;
     this.COOKIE_SAMESITE = process.env.COOKIE_SAMESITE;
+    this.API_PUBLIC_URL = process.env.API_PUBLIC_URL;
   }
 
   get isProduction(): boolean {
@@ -206,6 +215,20 @@ class Config {
       .split(",")
       .map((email) => email.trim().toLowerCase())
       .filter((email) => email.length > 0);
+  }
+
+  /** Falls back to localhost:<PORT> so local dev never needs API_PUBLIC_URL set. */
+  get publicUrl(): string {
+    if (this.API_PUBLIC_URL) {
+      return this.API_PUBLIC_URL.replace(/\/+$/, "");
+    }
+    const port = this.PORT ? Number(this.PORT) : 5000;
+    return `http://localhost:${port}`;
+  }
+
+  /** Base URL for assets served from apps/api/public (see main.ts useStaticAssets). */
+  get staticAssetsBaseUrl(): string {
+    return `${this.publicUrl}/static`;
   }
 
   get corsOrigins(): string[] {

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-labelledby="t">
+<title id="t">Bird</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#EAF8FF"/>
+<stop offset="1" stop-color="#C7ECFB"/>
+</linearGradient>
+</defs>
+<circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+<ellipse cx="132" cy="122" rx="20" ry="30" fill="#3E93BE" transform="rotate(18 132 122)"/>
+<circle cx="98" cy="112" r="50" fill="#5FB9E0"/>
+<ellipse cx="94" cy="140" rx="30" ry="28" fill="#EAF7FF"/>
+<path d="M74 72 L84 88 L64 88 Z" fill="#3E93BE"/>
+<path d="M90 66 L98 84 L80 84 Z" fill="#3E93BE"/>
+<path d="M118 108 Q140 110 122 122 Q116 116 118 108 Z" fill="#F4B740"/>
+<circle cx="112" cy="98" r="7" fill="#22303A"/>
+<circle cx="114" cy="95" r="2" fill="#fff"/>
+<ellipse cx="80" cy="176" rx="8" ry="4" fill="#F4B740"/>
+<ellipse cx="112" cy="178" rx="8" ry="4" fill="#F4B740"/>
+</svg>

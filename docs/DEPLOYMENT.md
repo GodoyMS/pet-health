@@ -55,6 +55,7 @@ The API throws on boot if any of these are missing, naming the ones it needs.
 | `SEED_ON_BOOT`      | `true`  | Loads species, breeds, and both rule sets on every boot (idempotent upserts) |
 | `DB_MIGRATIONS_RUN` | `false` | `railway.json`'s pre-deploy hook already runs them; avoids replicas racing   |
 | `ADMIN_ORIGIN`      | origin  | Adds the admin app to the CORS allow-list                                   |
+| `API_PUBLIC_URL`    | `https://<this-service>.up.railway.app` | Absolute base URL the species seed uses to build image URLs (`/static/species/*.svg`); without it, seeded `imageUrl`s point at `localhost` |
 
 Leaving `DB_MIGRATIONS_RUN` unset is still safe — it defaults to `true` in
 production, and the second run simply finds nothing pending. Set it to `false`
@@ -87,6 +88,13 @@ Reference data (8 species, 84 breeds, preventive-care and lifestyle rules) lives
 in version control — `species.seed.ts` plus two `*.generated.json` files, which
 `nest build` copies into `dist/`. No API keys are needed to seed; `DEEPSEEK_API_KEY`
 only matters if you want to *regenerate* the rule files.
+
+Species images are SVGs in `apps/api/public/species/`, served at
+`/static/species/<file>.svg` (wired via `useStaticAssets` in `main.ts`). The
+seed writes each species' `imageUrl` as `API_PUBLIC_URL + /static/species/<file>.svg`
+(falling back to `http://localhost:<PORT>` when `API_PUBLIC_URL` is unset), so
+set `API_PUBLIC_URL` **before** the first production seed run — re-seeding
+after changing it updates existing rows too, since the seed is an upsert.
 
 | Context             | Command                                             |
 | ------------------- | --------------------------------------------------- |

@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-labelledby="t">
+<title id="t">Turtle</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#F1FAEC"/>
+<stop offset="1" stop-color="#DBF0CE"/>
+</linearGradient>
+<pattern id="shell" width="26" height="30" patternUnits="userSpaceOnUse">
+<polygon points="13,0 26,7.5 26,22.5 13,30 0,22.5 0,7.5" fill="#6FAE7E" stroke="#8FC49B" stroke-width="1.5"/>
+</pattern>
+</defs>
+<circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+<ellipse cx="45" cy="145" rx="13" ry="10" fill="#9AD1A4"/>
+<ellipse cx="155" cy="145" rx="13" ry="10" fill="#9AD1A4"/>
+<ellipse cx="40" cy="75" rx="12" ry="9" fill="#9AD1A4"/>
+<ellipse cx="160" cy="75" rx="12" ry="9" fill="#9AD1A4"/>
+<circle cx="100" cy="168" r="24" fill="#9AD1A4"/>
+<circle cx="92" cy="164" r="4" fill="#2E4A34"/>
+<circle cx="108" cy="164" r="4" fill="#2E4A34"/>
+<path d="M100 172 Q100 178 92 178" stroke="#2E4A34" stroke-width="2" fill="none" stroke-linecap="round"/>
+<circle cx="100" cy="104" r="62" fill="url(#shell)" stroke="#4F8A5E" stroke-width="4"/>
+</svg>

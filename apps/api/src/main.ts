@@ -1,6 +1,8 @@
 import "reflect-metadata";
+import { join } from "path";
 import { NestFactory } from "@nestjs/core";
 import { Logger, ValidationPipe } from "@nestjs/common";
+import { NestExpressApplication } from "@nestjs/platform-express";
 import cookieParser from "cookie-parser";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
@@ -16,9 +18,17 @@ async function bootstrap() {
     logger.warn(warning);
   }
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.use(cookieParser());
+
+  // Serves apps/api/public (e.g. species reference images) at /static/*.
+  // Works in both dev (__dirname = apps/api/src) and prod (__dirname =
+  // apps/api/dist), since "public" sits one level up from both.
+  app.useStaticAssets(join(__dirname, "..", "public"), {
+    prefix: "/static/",
+    maxAge: "1d"
+  });
 
   app.enableCors({
     origin: configEnvs.corsOrigins,

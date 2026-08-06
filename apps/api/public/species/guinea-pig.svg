@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200" role="img" aria-labelledby="t">
+<title id="t">Guinea Pig</title>
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+<stop offset="0" stop-color="#FBF2E7"/>
+<stop offset="1" stop-color="#F1DCC0"/>
+</linearGradient>
+</defs>
+<circle cx="100" cy="100" r="100" fill="url(#bg)"/>
+<ellipse cx="70" cy="78" rx="14" ry="12" fill="#8C5A34"/>
+<ellipse cx="130" cy="78" rx="14" ry="12" fill="#8C5A34"/>
+<circle cx="100" cy="118" r="54" fill="#B5794A"/>
+<path d="M64 78 Q40 110 62 150 Q80 168 100 168 L100 72 Q80 66 64 78 Z" fill="#F0DCC4"/>
+<ellipse cx="100" cy="146" rx="26" ry="20" fill="#F6E7D4"/>
+<g stroke="#C7A67D" stroke-width="2" stroke-linecap="round" opacity="0.8">
+<line x1="48" y1="132" x2="70" y2="128"/>
+<line x1="48" y1="142" x2="70" y2="140"/>
+<line x1="152" y1="132" x2="130" y2="128"/>
+<line x1="152" y1="142" x2="130" y2="140"/>
+</g>
+<ellipse cx="80" cy="112" rx="7" ry="8" fill="#3B2A1E"/>
+<ellipse cx="123" cy="112" rx="7" ry="8" fill="#3B2A1E"/>
+<circle cx="82" cy="109" r="2" fill="#fff"/>
+<circle cx="125" cy="109" r="2" fill="#fff"/>
+<ellipse cx="100" cy="134" rx="7" ry="5" fill="#3B2A1E"/>
+</svg>
