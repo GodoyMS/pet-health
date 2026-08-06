@@ -24,6 +24,27 @@ function say(message: string): void {
   console.error(`[baseline] ${message}`);
 }
 
+/**
+ * Connects with retries. A sleeping managed database (Railway's TCP proxy in
+ * particular) drops the first attempt with ECONNRESET, or answers "the database
+ * system is starting up", while it wakes.
+ */
+async function connectWithRetry(attempts = 8, delayMs = 4000): Promise<void> {
+  for (let attempt = 1; attempt <= attempts; attempt++) {
+    try {
+      await dataSource.initialize();
+      return;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (attempt === attempts) {
+        throw err;
+      }
+      say(`connection attempt ${attempt}/${attempts} failed (${message}); retrying…`);
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
+  }
+}
+
 /** A schema TypeORM built already has this table; an empty database does not. */
 async function schemaLooksPopulated(): Promise<boolean> {
   const rows: { exists: boolean }[] = await dataSource.query(
@@ -36,7 +57,7 @@ async function schemaLooksPopulated(): Promise<boolean> {
 async function main(): Promise<void> {
   const stampAll = process.argv.includes("--all");
 
-  await dataSource.initialize();
+  await connectWithRetry();
   try {
     const executor = new MigrationExecutor(dataSource);
     const pending = await executor.getPendingMigrations();
