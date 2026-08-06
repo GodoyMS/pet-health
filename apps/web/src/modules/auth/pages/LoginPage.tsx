@@ -6,8 +6,10 @@ import { z } from "zod";
 import { useEffect, useRef } from "react";
 
 import { authApi, type LoginPayload } from "../api/authApi";
-import { Button, Icon, Input, toast } from "@repo/ui";
+import { AuthLayout } from "../components/AuthLayout";
 import { GoogleIcon } from "../components/GoogleIcon";
+import { LOGIN_PANEL } from "../data/authCopy";
+import { Button, Icon, Input, toast } from "@repo/ui";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email"),
@@ -64,110 +66,94 @@ export const LoginPage = () => {
   });
 
   return (
-    <div className="flex justify-center items-center flex-col h-full min-h-screen bg-background">
-      <div className="mx-auto flex w-full max-w-md flex-col gap-6 rounded-xl border border-border bg-card p-8 shadow-sm">
-        {/* Header */}
-        <div className="flex flex-col items-center gap-2 text-center">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Icon name="pets" className="text-primary text-2xl" variant="filled" />
-          </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-foreground">
-            Welcome back
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Sign in to Pet Health Tracker
-          </p>
-        </div>
-
-        {/* Google Sign-in */}
-        <a href={`${API_URL}/auth/google`} className="block">
-          <Button
-            type="button"
-            variant="outline"
-            size="xl"
-            className="w-full gap-2 font-medium"
-          >
-            <GoogleIcon className="h-4 w-4" />
-            Continue with Google
-          </Button>
-        </a>
-
-        {/* Divider */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-border" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Or continue with email</span>
-          </div>
-        </div>
-
-        {/* Email/Password Form */}
-        <form
-          className="flex flex-col gap-4"
-          onSubmit={form.handleSubmit((values) => loginMutation.mutate(values))}
+    <AuthLayout
+      title="Welcome back"
+      lead="Sign in to continue tracking your pet's health."
+      panelHeadline={LOGIN_PANEL.headline}
+      panelSub={LOGIN_PANEL.sub}
+      panelImage={LOGIN_PANEL.image}
+      panelImageAlt={LOGIN_PANEL.imageAlt}
+      benefits={LOGIN_PANEL.benefits}
+      switchLabel="New here?"
+      switchTo="Create an account"
+      switchHref="/register"
+    >
+      <a href={`${API_URL}/auth/google`} className="block">
+        <Button
+          type="button"
+          variant="outline"
+          size="xl"
+          className="w-full gap-2 font-medium cursor-pointer"
         >
-          <div className="flex flex-col gap-1 text-sm">
-            <Input
-              type="email"
-              placeholder="Enter your email"
-              title="Email"
-              iconLeft={<Icon name="email" />}
-              {...form.register("email")}
-            />
-            {form.formState.errors.email && (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.email.message}
-              </p>
-            )}
-          </div>
+          <GoogleIcon className="h-4 w-4" />
+          Continue with Google
+        </Button>
+      </a>
 
-          <div className="flex flex-col gap-1 text-sm">
-            <Input
-              type="password"
-              placeholder="Enter your password"
-              title="Password"
-              iconLeft={<Icon name="password" />}
-              {...form.register("password")}
-            />
-            {form.formState.errors.password && (
-              <p className="text-xs text-destructive">
-                {form.formState.errors.password.message}
-              </p>
-            )}
-            <div className="flex justify-end">
-              <Link
-                to="/forgot-password"
-                className="text-xs font-medium text-primary hover:underline"
-              >
-                Forgot password?
-              </Link>
-            </div>
-          </div>
+      <div className="auth-divider">
+        <span>Or with email</span>
+      </div>
 
-          {loginMutation.isError && (
-            <p className="text-sm text-destructive text-center">
-              Invalid credentials. Please try again.
+      <form
+        className="flex flex-col gap-4"
+        onSubmit={form.handleSubmit((values) => loginMutation.mutate(values))}
+        noValidate
+      >
+        <div className="flex flex-col gap-1.5 text-sm">
+          <Input
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            title="Email"
+            iconLeft={<Icon name="email" />}
+            {...form.register("email")}
+          />
+          {form.formState.errors.email && (
+            <p className="text-xs text-destructive" role="alert">
+              {form.formState.errors.email.message}
             </p>
           )}
+        </div>
 
-          <Button
-            type="submit"
-            disabled={loginMutation.isPending}
-            className="mt-1"
-            size="xl"
-          >
-            {loginMutation.isPending ? "Signing in..." : "Sign in"}
-          </Button>
-        </form>
+        <div className="flex flex-col gap-1.5 text-sm">
+          <Input
+            type="password"
+            autoComplete="current-password"
+            placeholder="Your password"
+            title="Password"
+            iconLeft={<Icon name="password" />}
+            {...form.register("password")}
+          />
+          {form.formState.errors.password && (
+            <p className="text-xs text-destructive" role="alert">
+              {form.formState.errors.password.message}
+            </p>
+          )}
+          <div className="flex justify-end">
+            <Link
+              to="/forgot-password"
+              className="text-xs font-medium text-[var(--auth-teal-deep)] hover:text-[var(--auth-teal)] cursor-pointer transition-colors"
+            >
+              Forgot password?
+            </Link>
+          </div>
+        </div>
 
-        <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link to="/register" className="font-medium text-primary hover:underline">
-            Create one
-          </Link>
-        </p>
-      </div>
-    </div>
+        {loginMutation.isError && (
+          <p className="text-sm text-destructive text-center" role="alert">
+            Invalid credentials. Please try again.
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          disabled={loginMutation.isPending}
+          className="auth-cta mt-1 cursor-pointer"
+          size="xl"
+        >
+          {loginMutation.isPending ? "Signing in..." : "Sign in"}
+        </Button>
+      </form>
+    </AuthLayout>
   );
 };

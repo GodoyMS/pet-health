@@ -10,7 +10,8 @@
 @source "../../**/*.{ts,tsx,js,jsx}";
 @source "../../../../../packages/ui/src/**/*.{ts,tsx,js,jsx}";
 @theme inline {
-    --font-sans: var(--font-geist-sans), ui-sans-serif, sans-serif;
-    --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+    --font-sans: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-display: "Space Grotesk", "DM Sans", ui-sans-serif, sans-serif;
   }
   

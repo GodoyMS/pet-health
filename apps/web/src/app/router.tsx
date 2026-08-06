@@ -12,13 +12,11 @@ import DashboardLayout from "@shared/layouts/DashboardLayout";
 /**
  * Route-level code splitting.
  *
- * Only the shells and the landing (login) screen are imported eagerly — those
- * are what a cold visitor needs to see something. Everything else, including
- * the Google Maps SDK wrapper that the maps and neighbourhood pages pull in,
- * is fetched on navigation.
+ * Shells and auth entry are eager. Marketing landing and everything else —
+ * including Maps SDK pages — load on navigation.
  *
  * The fallback renders inside the already-mounted layout, so the sidebar and
- * header stay put while a page chunk loads.
+ * header stay put while a dashboard page chunk loads.
  */
 const lazyPage = <K extends string>(
   load: () => Promise<Record<K, FunctionComponent>>,
@@ -47,7 +45,13 @@ export const router = createBrowserRouter([
     path: "/",
     element: <AppShell />,
     children: [
-      { index: true, element: <LoginPage /> },
+      {
+        index: true,
+        element: lazyPage(
+          () => import("@modules/marketing/pages/LandingPage"),
+          "LandingPage",
+        ),
+      },
       { path: "login", element: <LoginPage /> },
       {
         path: "register",
