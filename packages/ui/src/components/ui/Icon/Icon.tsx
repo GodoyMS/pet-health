@@ -1,5 +1,8 @@
 import React from "react";
-export type IconVariant = "filled" | "outline"
+
+import { cn } from "../../../lib/utils/cn";
+
+export type IconVariant = "filled" | "outline";
 
 export interface IconProps extends React.HTMLAttributes<HTMLSpanElement> {
   /** The name of the Material Symbol (e.g. "home", "search") */
@@ -20,8 +23,7 @@ export interface IconProps extends React.HTMLAttributes<HTMLSpanElement> {
   "aria-label"?: string;
 }
 
-
- const Icon: React.FC<IconProps> = ({
+const Icon: React.FC<IconProps> = ({
   name,
   variant = "outline",
   weight = 400,
@@ -31,14 +33,15 @@ export interface IconProps extends React.HTMLAttributes<HTMLSpanElement> {
   "aria-label": ariaLabel,
   ...props
 }) => {
-  
-
   return (
     <span
-      className={className}
+      // `material-symbols-outlined` resets letter-spacing / text-transform so
+      // parent utilities like `tracking-wide uppercase` cannot break ligatures
+      // (which otherwise render the raw icon name as text).
+      className={cn("material-symbols-outlined", className)}
       style={{
-        fontFamily: 'Material Symbols Outlined',
-        fontVariationSettings: ` "FILL" ${variant==="filled"? `1`:`0`}, "wght" ${weight}, "GRAD" ${grade}, "opsz" ${opticalSize}`,
+        fontFamily: "Material Symbols Outlined",
+        fontVariationSettings: `"FILL" ${variant === "filled" ? 1 : 0}, "wght" ${weight}, "GRAD" ${grade}, "opsz" ${opticalSize}`
       }}
       aria-hidden={ariaLabel ? undefined : true}
       aria-label={ariaLabel}
@@ -48,4 +51,4 @@ export interface IconProps extends React.HTMLAttributes<HTMLSpanElement> {
     </span>
   );
 };
-export {Icon,type IconProps as IconPropsType}
+export { Icon, type IconProps as IconPropsType };

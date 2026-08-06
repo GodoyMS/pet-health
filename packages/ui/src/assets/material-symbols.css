@@ -24,7 +24,9 @@
   font-family: "Material Symbols Outlined";
   font-weight: normal;
   font-style: normal;
-  font-size: 24px;
+  /* Inherit so Tailwind `text-*` / parent size control the glyph; a fixed
+     24px here fought small icons inside `text-[10px] uppercase` labels. */
+  font-size: inherit;
   line-height: 1;
   letter-spacing: normal;
   text-transform: none;
