@@ -54,6 +54,17 @@ class Config {
   public DB_MIGRATIONS_RUN: string | undefined;
   /** Runs the idempotent reference-data seed on boot (species, breeds, care + lifestyle rules). */
   public SEED_ON_BOOT: string | undefined;
+  /**
+   * SameSite policy for the auth cookie: "lax" | "none" | "strict".
+   *
+   * Needs "none" when the web app and the API are on different *sites*. Two
+   * `*.up.railway.app` subdomains qualify, because `up.railway.app` is on the
+   * Public Suffix List — so a "lax" cookie is never sent on those cross-site
+   * XHRs and every authenticated request 401s. Subdomains of one custom domain
+   * (api.example.com / app.example.com) are same-site, where "lax" works and
+   * keeps SameSite's CSRF protection.
+   */
+  public COOKIE_SAMESITE: string | undefined;
 
   constructor() {
     this.NODE_ENV = process.env.NODE_ENV;
@@ -78,6 +89,7 @@ class Config {
     this.DB_SYNCHRONIZE = process.env.DB_SYNCHRONIZE;
     this.DB_MIGRATIONS_RUN = process.env.DB_MIGRATIONS_RUN;
     this.SEED_ON_BOOT = process.env.SEED_ON_BOOT;
+    this.COOKIE_SAMESITE = process.env.COOKIE_SAMESITE;
   }
 
   get isProduction(): boolean {
@@ -112,6 +124,20 @@ class Config {
     return boolEnv(this.SEED_ON_BOOT, false);
   }
 
+  /** Defaults to the CSRF-safer "lax"; opt in to "none" for cross-site setups. */
+  get cookieSameSite(): "lax" | "none" | "strict" {
+    const value = this.COOKIE_SAMESITE?.trim().toLowerCase();
+    if (value === "none" || value === "strict" || value === "lax") {
+      return value;
+    }
+    return "lax";
+  }
+
+  /** SameSite=None is only honoured by browsers on a Secure cookie. */
+  get isCookieSecure(): boolean {
+    return this.isProduction || this.cookieSameSite === "none";
+  }
+
   /** SES sends when a verified From address and region are configured. */
   get isSesEnabled(): boolean {
     return !!(this.SES_FROM_EMAIL && this.AWS_REGION);
@@ -143,15 +169,32 @@ class Config {
       );
     }
 
+    const warnings: string[] = [];
+
+    // Silent-failure guard: a "lax" cookie is never sent on cross-site XHR, so
+    // login succeeds and every subsequent request 401s with nothing in the logs.
+    if (this.isProduction && this.COOKIE_SAMESITE == null) {
+      warnings.push(
+        "COOKIE_SAMESITE is not set, defaulting to \"lax\". If the web app is " +
+          "on a different site than this API (two *.up.railway.app subdomains " +
+          "are), set COOKIE_SAMESITE=none or the auth cookie will not be sent " +
+          "and every authenticated request will 401."
+      );
+    }
+
     const optional: { key: keyof Config; feature: string }[] = [
       { key: "DEEPSEEK_API_KEY", feature: "AI wellness reports" },
       { key: "GOOGLE_CLIENT_ID", feature: "Google sign-in" },
       { key: "GOOGLE_MAPS_API_KEY", feature: "Nearby Care map" },
       { key: "SES_FROM_EMAIL", feature: "transactional email (codes fall back to logs)" }
     ];
-    return optional
-      .filter(({ key }) => isBlank(key))
-      .map(({ key, feature }) => `${key} is not set — ${feature} is disabled.`);
+    for (const { key, feature } of optional) {
+      if (isBlank(key)) {
+        warnings.push(`${key} is not set — ${feature} is disabled.`);
+      }
+    }
+
+    return warnings;
   }
 
   get isGoogleAuthEnabled(): boolean {

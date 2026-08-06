@@ -121,13 +121,24 @@ class MessageResponseDto {
   previewCode?: string;
 }
 
-const setAuthCookie = (res: Response, token: string) => {
-  const isProduction = process.env.NODE_ENV === "production";
-  res.cookie("auth_token", token, {
+/**
+ * Shared so `clearCookie` sends the same attributes as `cookie`. A browser will
+ * not drop a `SameSite=None; Secure` cookie when the clearing response omits
+ * those flags, which would leave users unable to log out.
+ */
+const authCookieOptions = () =>
+  ({
     httpOnly: true,
-    secure: isProduction,
-    sameSite: "lax",
-    path: "/",
+    secure: configEnvs.isCookieSecure,
+    // "lax" locally and on a shared custom domain; "none" when the web app and
+    // the API are on different sites (e.g. two *.up.railway.app subdomains).
+    sameSite: configEnvs.cookieSameSite,
+    path: "/"
+  }) as const;
+
+const setAuthCookie = (res: Response, token: string) => {
+  res.cookie("auth_token", token, {
+    ...authCookieOptions(),
     maxAge: 24 * 60 * 60 * 1000
   });
 };
@@ -219,7 +230,7 @@ export class AuthController {
   @ApiOperation({ summary: "Log out; clears auth_token cookie" })
   @ApiResponse({ status: 200, description: "Logged out" })
   async logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie("auth_token", { path: "/" });
+    res.clearCookie("auth_token", authCookieOptions());
     return { success: true };
   }
 
@@ -247,7 +258,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response
   ) {
     await this.authService.deleteAccount(user.id);
-    res.clearCookie("auth_token", { path: "/" });
+    res.clearCookie("auth_token", authCookieOptions());
     return { success: true };
   }
 

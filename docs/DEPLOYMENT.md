@@ -63,9 +63,8 @@ once you run more than one replica.
 `PORT` is injected by Railway; do not set it. `DB_SSL` is not needed for
 Railway's Postgres proxy — set it to `true` on Neon, Supabase, or RDS.
 
-Everything else (`DEEPSEEK_API_KEY`, `GOOGLE_*`, `AWS_*`/`SES_*`) is optional and
-gates a single feature. The API logs a warning at boot for each unset one and
-starts anyway.
+Everything else is optional and gates a single feature. The API logs a warning at
+boot for each unset one and starts anyway — see "Optional integrations" below.
 
 ---
 
@@ -98,6 +97,29 @@ only matters if you want to *regenerate* the rule files.
 
 All seeds upsert by natural key, so re-running never duplicates rows.
 
+### Is `SEED_ON_BOOT=true` safe on every deploy?
+
+For user data, yes — unconditionally. The seed only ever writes to `species`,
+`breeds`, `preventive_care_rules` and `lifestyle_rules`. It never touches users,
+pets, health logs, friendships, or AI reports, and the only row it deletes is a
+legacy preventive-care rule with a `NULL` breedId.
+
+The caveat is the admin backoffice, which has full CRUD on both rule tables
+(`/admin/preventive-care-rules`, `/admin/lifestyle-rules`). Against a rule whose
+title appears in the generated files, the boot seed is authoritative:
+
+| Admin action on a generated rule | Result on next boot                      |
+| -------------------------------- | ---------------------------------------- |
+| Edits type / age range / interval | Reverted to the generated value          |
+| Deletes it                        | Re-created                               |
+| Renames the title                 | Original re-inserted; the rename remains |
+| Creates a rule with a new title   | Left alone — the seed never sees it      |
+
+So: leave `SEED_ON_BOOT=true` if the generated rules are managed content and the
+admin panel is only used to *add* rules. Set it to `false` after the first
+deploy if admins are meant to curate the generated ones, and run
+`pnpm run seed:prod` by hand when you want to reapply them.
+
 **Demo neighbours are deliberately excluded from all of the above.** They create
 fake user accounts, and stay opt-in for local use only:
 
@@ -107,6 +129,80 @@ pnpm run seed:neighbours:clear
 ```
 
 ---
+
+## Optional integrations
+
+Each one is off until its variables are set. `<API>` below is the deployed API
+origin, e.g. `https://pet-health-api.up.railway.app`.
+
+### DeepSeek — AI wellness reports
+
+| Variable           | Value        |
+| ------------------ | ------------ |
+| `DEEPSEEK_API_KEY` | your API key |
+
+Nothing else to configure. **Do not set `DEEPSEEK_INSECURE_TLS` in production** —
+it disables TLS certificate verification and exists only as a workaround for
+corporate networks in local development.
+
+### Google OAuth — sign in with Google
+
+| Variable               | Value                          |
+| ---------------------- | ------------------------------ |
+| `GOOGLE_CLIENT_ID`     | from Google Cloud Console      |
+| `GOOGLE_CLIENT_SECRET` | from Google Cloud Console      |
+| `GOOGLE_CALLBACK_URL`  | `<API>/auth/google/callback`   |
+
+In Google Cloud Console → APIs & Services → Credentials → your OAuth client, add
+that exact URL under **Authorized redirect URIs**. Keep the localhost entry
+alongside it so local development keeps working. A mismatch produces
+`Error 400: redirect_uri_mismatch`.
+
+### Google Calendar — sync preventive care to a calendar
+
+| Variable                       | Value                              |
+| ------------------------------ | ---------------------------------- |
+| `GOOGLE_CALENDAR_CALLBACK_URL` | `<API>/google-calendar/callback`   |
+
+Reuses the OAuth client above, so add this URL to the **same** client's
+authorized redirect URIs, and enable the **Google Calendar API** in the project.
+
+### Google Places — Nearby Care map
+
+| Variable              | Value                    |
+| --------------------- | ------------------------ |
+| `GOOGLE_MAPS_API_KEY` | server-side key          |
+
+Enable **Places API (New)** on the key's project. Restrict it by *API* rather
+than by IP — Railway's egress addresses are not stable, so an IP allow-list will
+break the feature.
+
+The browser map uses a **separate** key, `VITE_GOOGLE_MAPS_API_KEY`, set on
+`apps/web` and restricted by HTTP referrer to the web app's domain. Never reuse
+the server key there: a referrer-restricted key is exposed to the browser by
+design, and the server key must not be.
+
+### AWS SES — verification and password-reset codes
+
+| Variable                | Value                                |
+| ----------------------- | ------------------------------------ |
+| `AWS_REGION`            | e.g. `us-east-1`                     |
+| `AWS_ACCESS_KEY_ID`     | IAM key with `ses:SendEmail`         |
+| `AWS_SECRET_ACCESS_KEY` | matching secret                      |
+| `SES_FROM_EMAIL`        | a **verified** SES identity          |
+| `SES_CONFIGURATION_SET` | optional, for open/bounce tracking   |
+
+> **Request SES production access before real users register.** In production
+> there is no console fallback: when SES rejects a send, the API responds `502`
+> and registration fails. While the account is in the SES sandbox, SES rejects
+> every recipient that is not itself a verified identity — so sign-ups would work
+> only for inboxes you verified by hand. Outside production the code is logged
+> and returned as `previewCode` instead, which is why this does not show up
+> locally.
+>
+> The failure is at least clean: the code is emailed *before* the challenge row
+> is written, so a rejected send leaves no half-finished state and the user can
+> simply retry.
 
 ## Changing the schema
 
