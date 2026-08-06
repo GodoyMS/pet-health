@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Pet Health">
+  <rect width="64" height="64" rx="14" fill="#0F766E"/>
+  <!-- main pad -->
+  <ellipse cx="32" cy="40" rx="12.5" ry="10.5" fill="#FFFFFF"/>
+  <!-- toes -->
+  <ellipse cx="18.5" cy="27" rx="5.2" ry="6.4" fill="#FFFFFF"/>
+  <ellipse cx="27.5" cy="21.5" rx="5.2" ry="6.4" fill="#FFFFFF"/>
+  <ellipse cx="36.5" cy="21.5" rx="5.2" ry="6.4" fill="#FFFFFF"/>
+  <ellipse cx="45.5" cy="27" rx="5.2" ry="6.4" fill="#FFFFFF"/>
+</svg>
