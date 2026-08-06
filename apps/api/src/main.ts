@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import cookieParser from "cookie-parser";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
@@ -8,6 +8,14 @@ import { AppModule } from "./app.module";
 import { configEnvs } from "config/configEnvs";
 
 async function bootstrap() {
+  const logger = new Logger("Bootstrap");
+
+  // Fail before the DataSource connects, so a misconfigured deployment reports
+  // the missing variable instead of a connection or 500 error later.
+  for (const warning of configEnvs.validateConfig()) {
+    logger.warn(warning);
+  }
+
   const app = await NestFactory.create(AppModule);
 
   app.use(cookieParser());
@@ -50,7 +58,9 @@ async function bootstrap() {
   });
 
   const port = configEnvs.PORT ? Number(configEnvs.PORT) : 5000;
-  await app.listen(port);
+  // Bind all interfaces so container platforms (Railway) can reach the process.
+  await app.listen(port, "0.0.0.0");
+  logger.log(`API listening on port ${port}`);
 }
 
 bootstrap();

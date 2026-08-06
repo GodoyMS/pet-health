@@ -12,6 +12,8 @@ import { DashboardModule } from "./dashboard/dashboard.module";
 import { GoogleCalendarModule } from "./google-calendar/google-calendar.module";
 import { NearbyPlacesModule } from "./nearby-places/nearby-places.module";
 import { NeighbourhoodModule } from "./neighbourhood/neighbourhood.module";
+import { HealthModule } from "./health/health.module";
+import { SeedBootstrapModule } from "./seed/seed-bootstrap.module";
 import { ormConfig } from "./config/ormconfig";
 
 @Module({
@@ -29,7 +31,9 @@ import { ormConfig } from "./config/ormconfig";
     GoogleCalendarModule,
     NearbyPlacesModule,
     NeighbourhoodModule,
-    AdminModule
+    AdminModule,
+    HealthModule,
+    SeedBootstrapModule
   ]
 })
 export class AppModule {}

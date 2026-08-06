@@ -1,0 +1,20 @@
+node_modules
+**/node_modules
+dist
+**/dist
+build
+**/build
+coverage
+**/coverage
+.turbo
+**/.turbo
+.git
+.github
+.claude
+docs
+**/*.log
+
+# Secrets never belong in the image — Railway injects real values as env vars.
+# (.env.example is not matched by these patterns and still ships.)
+.env
+**/.env

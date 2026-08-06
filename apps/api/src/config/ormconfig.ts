@@ -1,3 +1,5 @@
+import { join } from "node:path";
+
 import { DataSourceOptions } from "typeorm";
 
 import { UserOrmEntity } from "../users/infrastructure/typeorm/user.orm-entity";
@@ -39,6 +41,13 @@ export const ormConfig: DataSourceOptions = {
     PetLocationOrmEntity,
     PetFriendshipOrmEntity
   ],
-  synchronize: true
+  // Resolves to src/migrations/*.ts under tsx and dist/migrations/*.js once built,
+  // so the same config drives the CLI and the running app.
+  migrations: [join(__dirname, "..", "migrations", "*.{ts,js}")],
+  migrationsTableName: "typeorm_migrations",
+  // Production schema is owned by migrations; synchronize is forced off there.
+  synchronize: configEnvs.isDbSynchronizeEnabled,
+  migrationsRun: configEnvs.isDbMigrationsRunEnabled,
+  ssl: configEnvs.isDbSslEnabled ? { rejectUnauthorized: false } : undefined
 };
 

@@ -2,6 +2,15 @@ import * as dotenv from "dotenv";
 
 dotenv.config({});
 
+/** Reads a boolean env var; `undefined`/empty falls back to `fallback`. */
+function boolEnv(raw: string | undefined, fallback: boolean): boolean {
+  const value = raw?.trim().toLowerCase();
+  if (value == null || value === "") {
+    return fallback;
+  }
+  return value === "true" || value === "1" || value === "yes";
+}
+
 class Config {
   public NODE_ENV: string | undefined;
   public JWT_SECRET: string | undefined;
@@ -37,6 +46,14 @@ class Config {
   public SES_FROM_EMAIL: string | undefined;
   /** Optional SES configuration set name. */
   public SES_CONFIGURATION_SET: string | undefined;
+  /** Enables TLS to Postgres. Required by most managed providers over public networking. */
+  public DB_SSL: string | undefined;
+  /** Escape hatch for TypeORM auto-schema. Never enable in production — migrations own the schema. */
+  public DB_SYNCHRONIZE: string | undefined;
+  /** Applies pending migrations during DataSource init, before the app accepts traffic. */
+  public DB_MIGRATIONS_RUN: string | undefined;
+  /** Runs the idempotent reference-data seed on boot (species, breeds, care + lifestyle rules). */
+  public SEED_ON_BOOT: string | undefined;
 
   constructor() {
     this.NODE_ENV = process.env.NODE_ENV;
@@ -57,10 +74,42 @@ class Config {
     this.AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY;
     this.SES_FROM_EMAIL = process.env.SES_FROM_EMAIL;
     this.SES_CONFIGURATION_SET = process.env.SES_CONFIGURATION_SET;
+    this.DB_SSL = process.env.DB_SSL;
+    this.DB_SYNCHRONIZE = process.env.DB_SYNCHRONIZE;
+    this.DB_MIGRATIONS_RUN = process.env.DB_MIGRATIONS_RUN;
+    this.SEED_ON_BOOT = process.env.SEED_ON_BOOT;
+  }
+
+  get isProduction(): boolean {
+    return this.NODE_ENV === "production";
   }
 
   get isNearbyPlacesEnabled(): boolean {
     return !!this.GOOGLE_MAPS_API_KEY;
+  }
+
+  get isDbSslEnabled(): boolean {
+    return boolEnv(this.DB_SSL, false);
+  }
+
+  /**
+   * Auto-schema is a development convenience only. Production schema changes go
+   * through migrations, so this stays off there regardless of the env var.
+   */
+  get isDbSynchronizeEnabled(): boolean {
+    if (this.isProduction) {
+      return false;
+    }
+    return boolEnv(this.DB_SYNCHRONIZE, true);
+  }
+
+  /** Pending migrations apply automatically in production; opt-in elsewhere. */
+  get isDbMigrationsRunEnabled(): boolean {
+    return boolEnv(this.DB_MIGRATIONS_RUN, this.isProduction);
+  }
+
+  get isSeedOnBootEnabled(): boolean {
+    return boolEnv(this.SEED_ON_BOOT, false);
   }
 
   /** SES sends when a verified From address and region are configured. */
@@ -68,20 +117,41 @@ class Config {
     return !!(this.SES_FROM_EMAIL && this.AWS_REGION);
   }
 
-  public validateConfig(): void {
+  /**
+   * Fails fast on boot rather than at first request. Only vars the API cannot
+   * serve a single authenticated request without are required; feature-gating
+   * vars are reported as warnings so a deployment can start without them.
+   *
+   * @returns Warnings for optional vars whose feature will stay disabled.
+   */
+  public validateConfig(): string[] {
+    const isBlank = (key: keyof Config): boolean => {
+      const value = this[key];
+      return typeof value !== "string" || value.trim() === "";
+    };
+
     const required: (keyof Config)[] = [
-      "NODE_ENV",
       "JWT_SECRET",
       "DATABASE_URL",
-      "PORT",
-      "WEB_ORIGIN",
-      "DEEPSEEK_API_KEY"
+      "WEB_ORIGIN"
     ];
-    for (const key of required) {
-      if (this[key] === undefined) {
-        throw new Error(`Configuration ${key} is undefined`);
-      }
+    const missing = required.filter(isBlank);
+    if (missing.length > 0) {
+      throw new Error(
+        `Missing required environment variable(s): ${missing.join(", ")}. ` +
+          "See apps/api/.env.example."
+      );
     }
+
+    const optional: { key: keyof Config; feature: string }[] = [
+      { key: "DEEPSEEK_API_KEY", feature: "AI wellness reports" },
+      { key: "GOOGLE_CLIENT_ID", feature: "Google sign-in" },
+      { key: "GOOGLE_MAPS_API_KEY", feature: "Nearby Care map" },
+      { key: "SES_FROM_EMAIL", feature: "transactional email (codes fall back to logs)" }
+    ];
+    return optional
+      .filter(({ key }) => isBlank(key))
+      .map(({ key, feature }) => `${key} is not set — ${feature} is disabled.`);
   }
 
   get isGoogleAuthEnabled(): boolean {

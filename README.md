@@ -24,3 +24,8 @@ Common scripts:
 See `apps/admin/README.md` for how to grant admin access
 (`pnpm run admin:promote <email>` or the `ADMIN_EMAILS` env var).
 
+### Deployment
+
+See `docs/DEPLOYMENT.md` for deploying the API to Railway: migrations, seeding,
+and the required environment variables.
+
