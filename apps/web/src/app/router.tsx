@@ -3,11 +3,13 @@ import { createBrowserRouter } from "react-router-dom";
 
 import { Spinner } from "@repo/ui";
 
+import { RouteErrorPage } from "@app/RouteErrorPage";
 import { AppShell } from "@app/shell/AppShell";
 
 import { LoginPage } from "@modules/auth/pages/LoginPage";
 
 import DashboardLayout from "@shared/layouts/DashboardLayout";
+import { importWithChunkRecovery } from "@shared/utils/chunkLoadRecovery";
 
 /**
  * Route-level code splitting.
@@ -17,6 +19,9 @@ import DashboardLayout from "@shared/layouts/DashboardLayout";
  *
  * The fallback renders inside the already-mounted layout, so the sidebar and
  * header stay put while a dashboard page chunk loads.
+ *
+ * Dynamic imports go through importWithChunkRecovery so a stale hashed chunk
+ * after deploy reloads the page once instead of crashing navigation.
  */
 const lazyPage = <K extends string>(
   load: () => Promise<Record<K, FunctionComponent>>,
@@ -25,7 +30,9 @@ const lazyPage = <K extends string>(
   // The cast collapses `Record<K, FunctionComponent>[K]`, which stays deferred
   // while K is unresolved and so cannot be checked as a JSX element type.
   const Page = lazy(() =>
-    load().then((module) => ({ default: module[name] as FunctionComponent })),
+    importWithChunkRecovery(() =>
+      load().then((module) => ({ default: module[name] as FunctionComponent })),
+    ),
   );
   return (
     <Suspense
@@ -44,6 +51,7 @@ export const router = createBrowserRouter([
   {
     path: "/",
     element: <AppShell />,
+    errorElement: <RouteErrorPage />,
     children: [
       {
         index: true,
