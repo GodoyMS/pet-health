@@ -86,14 +86,19 @@ async function sourceFiles(dir) {
 }
 
 /**
- * Two shapes cover every icon in the codebase: the JSX prop and an `icon`
- * property on a config/meta object. Both are always string literals — a grep
- * for `name={\`` / `icon: \`` finds no template literals.
+ * Three shapes cover every icon in the codebase: the JSX prop, an `icon`
+ * property on a config/meta object, and string literals inside `name={…}` /
+ * `icon={…}` expressions (ternaries like `icon={on ? "a" : "b"}`). Template
+ * literals are never used for icon names.
  */
 const PATTERNS = [
   /<Icon\b[^>]*?\bname="([a-z0-9_]+)"/gs,
   /\bicon\s*[:=]\s*"([a-z0-9_]+)"/g,
 ];
+
+/** Pull every `"snake_case"` literal out of a JSX expression prop. */
+const EXPR_PROP = /\b(?:name|icon)=\{([^}]+)\}/g;
+const QUOTED_NAME = /"([a-z0-9_]+)"/g;
 
 /** Every icon-shaped literal in the tree, real Material Symbol or not. */
 async function collectCandidates() {
@@ -103,6 +108,9 @@ async function collectCandidates() {
       const source = await fs.readFile(file, "utf8");
       for (const pattern of PATTERNS) {
         for (const [, name] of source.matchAll(pattern)) candidates.add(name);
+      }
+      for (const [, expr] of source.matchAll(EXPR_PROP)) {
+        for (const [, name] of expr.matchAll(QUOTED_NAME)) candidates.add(name);
       }
     }
   }
