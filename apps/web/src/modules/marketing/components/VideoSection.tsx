@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type KeyboardEvent, type MouseEvent } from "react";
-import { Maximize2, Pause, Play, Volume2, VolumeX } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Maximize2, Play, Volume2, VolumeX } from "lucide-react";
 
 import { Icon } from "@repo/ui";
 
@@ -8,50 +8,28 @@ import { useReveal } from "../hooks/useReveal";
 const PROMO_SRC = "/landing/brag.mp4";
 const PROMO_POSTER = "/landing/brag-poster.jpg";
 
-function formatTime(seconds: number) {
-  if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
-  const m = Math.floor(seconds / 60);
-  const s = Math.floor(seconds % 60);
-  return `${m}:${s.toString().padStart(2, "0")}`;
-}
-
 export function VideoSection() {
   const { ref, className } = useReveal<HTMLElement>();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [playing, setPlaying] = useState(false);
   const [started, setStarted] = useState(false);
   const [muted, setMuted] = useState(false);
-  const [progress, setProgress] = useState(0);
-  const [duration, setDuration] = useState(0);
-  const [current, setCurrent] = useState(0);
 
   useEffect(() => {
     const video = videoRef.current;
     if (!video) return;
 
-    const onTime = () => {
-      setCurrent(video.currentTime);
-      setProgress(video.duration ? (video.currentTime / video.duration) * 100 : 0);
-    };
-    const onMeta = () => setDuration(video.duration || 0);
     const onPlay = () => {
       setPlaying(true);
       setStarted(true);
     };
     const onPause = () => setPlaying(false);
-    const onEnded = () => {
-      setPlaying(false);
-      setProgress(100);
-    };
+    const onEnded = () => setPlaying(false);
 
-    video.addEventListener("timeupdate", onTime);
-    video.addEventListener("loadedmetadata", onMeta);
     video.addEventListener("play", onPlay);
     video.addEventListener("pause", onPause);
     video.addEventListener("ended", onEnded);
     return () => {
-      video.removeEventListener("timeupdate", onTime);
-      video.removeEventListener("loadedmetadata", onMeta);
       video.removeEventListener("play", onPlay);
       video.removeEventListener("pause", onPause);
       video.removeEventListener("ended", onEnded);
@@ -62,7 +40,7 @@ export function VideoSection() {
     const video = videoRef.current;
     if (!video) return;
     void video.play().catch(() => {
-      /* autoplay policies — user can retry via controls */
+      /* autoplay policies — user can retry via the center play button */
     });
   };
 
@@ -80,18 +58,6 @@ export function VideoSection() {
     setMuted(video.muted);
   };
 
-  const seek = (ratio: number) => {
-    const video = videoRef.current;
-    if (!video || !video.duration) return;
-    video.currentTime = Math.min(1, Math.max(0, ratio)) * video.duration;
-  };
-
-  const onSeekBar = (e: MouseEvent<HTMLDivElement>) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const ratio = (e.clientX - rect.left) / rect.width;
-    seek(ratio);
-  };
-
   const enterFullscreen = () => {
     const video = videoRef.current;
     if (!video) return;
@@ -100,6 +66,8 @@ export function VideoSection() {
       (video as HTMLVideoElement & { webkitEnterFullscreen: () => void }).webkitEnterFullscreen();
     }
   };
+
+  const showPlayOverlay = !started || !playing;
 
   return (
     <section
@@ -147,69 +115,35 @@ export function VideoSection() {
               Your browser does not support embedded video.
             </video>
 
-            {!started ? (
+            {showPlayOverlay ? (
               <button
                 type="button"
-                className="landing-play cursor-pointer"
+                className={`landing-play cursor-pointer ${started ? "landing-play--resume" : ""}`}
                 onClick={togglePlay}
-                aria-label="Play promotional video"
+                aria-label={started ? "Resume promotional video" : "Play promotional video"}
               >
                 <span className="landing-play__btn">
                   <Play className="ml-1 h-7 w-7 fill-current" aria-hidden />
                 </span>
-                <span className="landing-play__label">
-                  Watch the product film
-                  <span className="opacity-80"> · ~20s</span>
-                </span>
+                {!started ? (
+                  <span className="landing-play__label">
+                    Watch the product film
+                    <span className="opacity-80"> · ~20s</span>
+                  </span>
+                ) : null}
               </button>
             ) : null}
 
             {started ? (
-              <div className="landing-video-controls">
-                <button
-                  type="button"
-                  className="landing-video-controls__btn cursor-pointer"
-                  aria-label={playing ? "Pause video" : "Play video"}
-                  onClick={togglePlay}
-                >
-                  {playing ? (
-                    <Pause className="h-4 w-4 fill-current" aria-hidden />
-                  ) : (
-                    <Play className="ml-0.5 h-4 w-4 fill-current" aria-hidden />
-                  )}
-                </button>
-
-                <div
-                  className="landing-video-controls__seek cursor-pointer"
-                  role="slider"
-                  aria-label="Seek video"
-                  aria-valuemin={0}
-                  aria-valuemax={100}
-                  aria-valuenow={Math.round(progress)}
-                  tabIndex={0}
-                  onClick={onSeekBar}
-                  onKeyDown={(e: KeyboardEvent<HTMLDivElement>) => {
-                    if (e.key === "ArrowRight") seek((current + 2) / (duration || 1));
-                    if (e.key === "ArrowLeft") seek((current - 2) / (duration || 1));
-                  }}
-                >
-                  <div className="landing-video-controls__track">
-                    <div
-                      className="landing-video-controls__fill"
-                      style={{ width: `${progress}%` }}
-                    />
-                  </div>
-                </div>
-
-                <span className="landing-video-controls__time tabular-nums">
-                  {formatTime(current)} / {formatTime(duration)}
-                </span>
-
+              <div className="landing-video-controls landing-video-controls--minimal">
                 <button
                   type="button"
                   className="landing-video-controls__btn cursor-pointer"
                   aria-label={muted ? "Unmute video" : "Mute video"}
-                  onClick={toggleMute}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    toggleMute();
+                  }}
                 >
                   {muted ? (
                     <VolumeX className="h-4 w-4" aria-hidden />
@@ -222,7 +156,10 @@ export function VideoSection() {
                   type="button"
                   className="landing-video-controls__btn cursor-pointer"
                   aria-label="Enter fullscreen"
-                  onClick={enterFullscreen}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    enterFullscreen();
+                  }}
                 >
                   <Maximize2 className="h-4 w-4" aria-hidden />
                 </button>

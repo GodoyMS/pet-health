@@ -301,11 +301,18 @@
   position: absolute;
   inset-inline: 0;
   bottom: 0;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 0.65rem;
   padding: 0.85rem 1rem 1rem;
   background: linear-gradient(180deg, transparent, oklch(0.12 0.03 175 / 0.82));
+  pointer-events: none;
+}
+
+.landing-video-controls--minimal {
+  justify-content: flex-end;
+  background: linear-gradient(180deg, transparent 20%, oklch(0.12 0.03 175 / 0.55));
 }
 
 .landing-video-controls__btn {
@@ -317,6 +324,7 @@
   border-radius: 9999px;
   background: oklch(1 0 0 / 0.14);
   color: white;
+  pointer-events: auto;
   transition: background 160ms ease, transform 160ms ease;
 }
 
